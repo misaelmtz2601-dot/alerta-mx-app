@@ -13,7 +13,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #f3f3f3;
       color: #222;
     }
 
@@ -122,7 +122,6 @@
     </button>
   </section>
 
-
   <section class="card" id="login">
 
     <h2>Iniciar sesión</h2>
@@ -139,18 +138,17 @@
       placeholder="Contraseña"
     >
 
-    <button class="blue" onclick="login()">
+    <button class="blue" onclick="iniciarSesion()">
       Entrar
     </button>
 
-    <button class="dark" onclick="registro()">
+    <button class="dark" onclick="registrarse()">
       Crear cuenta
     </button>
 
     <p id="estado"></p>
 
   </section>
-
 
   <section class="card">
     <h2>⚠️ Aviso importante</h2>
@@ -168,66 +166,167 @@
   ALERTA MX © 2026
 </footer>
 
+<script type="module">
 
-<script>
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  function mostrarLogin() {
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+    authDomain: "alerta-mx-42492.firebaseapp.com",
+    projectId: "alerta-mx-42492",
+    storageBucket: "alerta-mx-42492.firebasestorage.app",
+    messagingSenderId: "17765892560",
+    appId: "1:17765892560:web:29a16191b3155eae2c39d5",
+    measurementId: "G-4Y6N9Q47XB"
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+
+  window.mostrarLogin = function() {
+
     document.getElementById("login").style.display = "block";
 
     document.getElementById("login")
       .scrollIntoView({
         behavior: "smooth"
       });
-  }
+
+  };
 
 
-  function login() {
+  window.iniciarSesion = async function() {
 
     const email =
-      document.getElementById("email").value;
+      document.getElementById("email").value.trim();
 
     const password =
       document.getElementById("password").value;
 
+    const estado =
+      document.getElementById("estado");
+
     if (!email || !password) {
 
-      document.getElementById("estado").innerText =
+      estado.innerText =
         "⚠️ Escribe tu correo y contraseña.";
 
       return;
     }
 
-    document.getElementById("estado").innerText =
-      "🔐 Conectando con el sistema...";
+    estado.innerText =
+      "🔐 Iniciando sesión...";
 
-  }
+    try {
+
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      estado.innerText =
+        "✅ Sesión iniciada correctamente.";
+
+    } catch (error) {
+
+      console.error(error);
+
+      estado.innerText =
+        "❌ Correo o contraseña incorrectos.";
+
+    }
+
+  };
 
 
-  function registro() {
+  window.registrarse = async function() {
 
-    document.getElementById("estado").innerText =
-      "📝 Registro de usuarios próximamente.";
+    const email =
+      document.getElementById("email").value.trim();
 
-  }
+    const password =
+      document.getElementById("password").value;
+
+    const estado =
+      document.getElementById("estado");
+
+    if (!email || !password) {
+
+      estado.innerText =
+        "⚠️ Escribe tu correo y contraseña.";
+
+      return;
+    }
+
+    estado.innerText =
+      "📝 Creando cuenta...";
+
+    try {
+
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      estado.innerText =
+        "✅ Cuenta creada correctamente.";
+
+    } catch (error) {
+
+      console.error(error);
+
+      estado.innerText =
+        "❌ No se pudo crear la cuenta.";
+
+    }
+
+  };
 
 
-  function crearCaso() {
+  window.crearCaso = function() {
 
     mostrarLogin();
 
     document.getElementById("estado").innerText =
       "🔐 Inicia sesión para continuar.";
 
-  }
+  };
 
 
-  function buscarCaso() {
+  window.buscarCaso = function() {
 
     alert(
-      "El buscador de personas desaparecidas estará disponible próximamente."
+      "El buscador se agregará después de comprobar el inicio de sesión."
     );
 
-  }
+  };
+
+
+  onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+
+      console.log(
+        "Usuario conectado:",
+        user.email
+      );
+
+    }
+
+  });
 
 </script>
 
