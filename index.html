@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALERTA MX</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+    }
+
+    header {
+      background: #b00020;
+      color: white;
+      text-align: center;
+      padding: 22px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 18px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .red {
+      background: #b00020;
+      color: white;
+    }
+
+    .dark {
+      background: #222;
+      color: white;
+    }
+
+    .blue {
+      background: #1769e0;
+      color: white;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    #login {
+      display: none;
+    }
+
+    #estado {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #777;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  🚨 ALERTA MX
+</header>
+
+<main>
+
+  <section class="card">
+    <h2>Bienvenido a ALERTA MX</h2>
+
+    <p>
+      Plataforma para consultar y gestionar información
+      relacionada con personas desaparecidas.
+    </p>
+
+    <button class="red" onclick="crearCaso()">
+      🚨 Reportar desaparición
+    </button>
+
+    <button class="dark" onclick="buscarCaso()">
+      🔎 Buscar persona
+    </button>
+
+    <button class="blue" onclick="mostrarLogin()">
+      👤 Iniciar sesión
+    </button>
+  </section>
+
+
+  <section class="card" id="login">
+
+    <h2>Iniciar sesión</h2>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Correo electrónico"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Contraseña"
+    >
+
+    <button class="blue" onclick="login()">
+      Entrar
+    </button>
+
+    <button class="dark" onclick="registro()">
+      Crear cuenta
+    </button>
+
+    <p id="estado"></p>
+
+  </section>
+
+
+  <section class="card">
+    <h2>⚠️ Aviso importante</h2>
+
+    <p>
+      ALERTA MX es una plataforma tecnológica.
+      Las alertas oficiales deben ser emitidas o autorizadas
+      por la autoridad competente.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  ALERTA MX © 2026
+</footer>
+
+
+<script>
+
+  function mostrarLogin() {
+    document.getElementById("login").style.display = "block";
+
+    document.getElementById("login")
+      .scrollIntoView({
+        behavior: "smooth"
+      });
+  }
+
+
+  function login() {
+
+    const email =
+      document.getElementById("email").value;
+
+    const password =
+      document.getElementById("password").value;
+
+    if (!email || !password) {
+
+      document.getElementById("estado").innerText =
+        "⚠️ Escribe tu correo y contraseña.";
+
+      return;
+    }
+
+    document.getElementById("estado").innerText =
+      "🔐 Conectando con el sistema...";
+
+  }
+
+
+  function registro() {
+
+    document.getElementById("estado").innerText =
+      "📝 Registro de usuarios próximamente.";
+
+  }
+
+
+  function crearCaso() {
+
+    mostrarLogin();
+
+    document.getElementById("estado").innerText =
+      "🔐 Inicia sesión para continuar.";
+
+  }
+
+
+  function buscarCaso() {
+
+    alert(
+      "El buscador de personas desaparecidas estará disponible próximamente."
+    );
+
+  }
+
+</script>
+
+</body>
+</html>
