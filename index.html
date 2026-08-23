@@ -6,9 +6,7 @@
   <title>ALERTA MX</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -22,14 +20,14 @@
       color: white;
       text-align: center;
       padding: 22px;
-      font-size: 28px;
+      font-size: 27px;
       font-weight: bold;
     }
 
     main {
-      max-width: 500px;
+      max-width: 550px;
       margin: auto;
-      padding: 20px;
+      padding: 18px;
     }
 
     .card {
@@ -44,27 +42,17 @@
       width: 100%;
       border: 0;
       border-radius: 10px;
-      padding: 15px;
+      padding: 14px;
       margin-top: 10px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .red {
-      background: #b00020;
-      color: white;
-    }
-
-    .dark {
-      background: #222;
-      color: white;
-    }
-
-    .blue {
-      background: #1769e0;
-      color: white;
-    }
+    .red { background: #b00020; color: white; }
+    .dark { background: #222; color: white; }
+    .blue { background: #1769e0; color: white; }
+    .green { background: #16803c; color: white; }
 
     input {
       width: 100%;
@@ -75,13 +63,17 @@
       font-size: 16px;
     }
 
-    #login {
+    .hidden {
       display: none;
     }
 
-    #estado {
-      margin-top: 15px;
+    .bienvenida {
       font-weight: bold;
+      color: #16803c;
+    }
+
+    .admin {
+      border-left: 5px solid #b00020;
     }
 
     footer {
@@ -101,7 +93,9 @@
 
 <main>
 
-  <section class="card">
+  <!-- INICIO -->
+  <section class="card" id="inicio">
+
     <h2>Bienvenido a ALERTA MX</h2>
 
     <p>
@@ -109,20 +103,15 @@
       relacionada con personas desaparecidas.
     </p>
 
-    <button class="red" onclick="crearCaso()">
-      🚨 Reportar desaparición
-    </button>
-
-    <button class="dark" onclick="buscarCaso()">
-      🔎 Buscar persona
-    </button>
-
-    <button class="blue" onclick="mostrarLogin()">
+    <button class="red" onclick="mostrarLogin()">
       👤 Iniciar sesión
     </button>
+
   </section>
 
-  <section class="card" id="login">
+
+  <!-- LOGIN -->
+  <section class="card hidden" id="login">
 
     <h2>Iniciar sesión</h2>
 
@@ -142,22 +131,58 @@
       Entrar
     </button>
 
-    <button class="dark" onclick="registrarse()">
-      Crear cuenta
-    </button>
-
-    <p id="estado"></p>
+    <p id="mensaje"></p>
 
   </section>
 
-  <section class="card">
-    <h2>⚠️ Aviso importante</h2>
 
-    <p>
-      ALERTA MX es una plataforma tecnológica.
-      Las alertas oficiales deben ser emitidas o autorizadas
-      por la autoridad competente.
-    </p>
+  <!-- PANEL USUARIO -->
+  <section class="card hidden" id="panelUsuario">
+
+    <h2>👤 Panel de usuario</h2>
+
+    <p class="bienvenida" id="usuarioNombre"></p>
+
+    <button class="red" onclick="reportar()">
+      🚨 Reportar desaparición
+    </button>
+
+    <button class="dark" onclick="buscar()">
+      🔎 Buscar persona
+    </button>
+
+    <button class="green" onclick="cerrarSesion()">
+      🚪 Cerrar sesión
+    </button>
+
+  </section>
+
+
+  <!-- PANEL ADMINISTRADOR -->
+  <section class="card admin hidden" id="panelAdmin">
+
+    <h2>🛡️ Panel de administrador</h2>
+
+    <p class="bienvenida" id="adminNombre"></p>
+
+    <button class="red" onclick="verAlertas()">
+      🚨 Gestionar alertas
+    </button>
+
+    <button class="blue" onclick="verUsuarios()">
+      👥 Gestionar usuarios
+    </button>
+
+    <button class="dark" onclick="buscar()">
+      🔎 Buscar persona
+    </button>
+
+    <button class="green" onclick="cerrarSesion()">
+      🚪 Cerrar sesión
+    </button>
+
+    <p id="adminMensaje"></p>
+
   </section>
 
 </main>
@@ -165,6 +190,7 @@
 <footer>
   ALERTA MX © 2026
 </footer>
+
 
 <script type="module">
 
@@ -174,10 +200,18 @@
   import {
     getAuth,
     signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+  import {
+    getFirestore,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+  /* FIREBASE */
 
   const firebaseConfig = {
     apiKey: "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
@@ -191,20 +225,26 @@
 
 
   const app = initializeApp(firebaseConfig);
+
   const auth = getAuth(app);
 
+  const db = getFirestore(app);
+
+
+  /* MOSTRAR LOGIN */
 
   window.mostrarLogin = function() {
 
-    document.getElementById("login").style.display = "block";
+    document.getElementById("inicio")
+      .classList.add("hidden");
 
     document.getElementById("login")
-      .scrollIntoView({
-        behavior: "smooth"
-      });
+      .classList.remove("hidden");
 
   };
 
+
+  /* INICIAR SESIÓN */
 
   window.iniciarSesion = async function() {
 
@@ -214,19 +254,22 @@
     const password =
       document.getElementById("password").value;
 
-    const estado =
-      document.getElementById("estado");
+    const mensaje =
+      document.getElementById("mensaje");
+
 
     if (!email || !password) {
 
-      estado.innerText =
-        "⚠️ Escribe tu correo y contraseña.";
+      mensaje.innerText =
+        "⚠️ Escribe correo y contraseña.";
 
       return;
     }
 
-    estado.innerText =
+
+    mensaje.innerText =
       "🔐 Iniciando sesión...";
+
 
     try {
 
@@ -236,14 +279,11 @@
         password
       );
 
-      estado.innerText =
-        "✅ Sesión iniciada correctamente.";
-
     } catch (error) {
 
       console.error(error);
 
-      estado.innerText =
+      mensaje.innerText =
         "❌ Correo o contraseña incorrectos.";
 
     }
@@ -251,82 +291,141 @@
   };
 
 
-  window.registrarse = async function() {
+  /* COMPROBAR USUARIO */
 
-    const email =
-      document.getElementById("email").value.trim();
+  onAuthStateChanged(auth, async (user) => {
 
-    const password =
-      document.getElementById("password").value;
+    if (!user) {
 
-    const estado =
-      document.getElementById("estado");
+      document
+        .getElementById("panelUsuario")
+        .classList.add("hidden");
 
-    if (!email || !password) {
-
-      estado.innerText =
-        "⚠️ Escribe tu correo y contraseña.";
+      document
+        .getElementById("panelAdmin")
+        .classList.add("hidden");
 
       return;
     }
 
-    estado.innerText =
-      "📝 Creando cuenta...";
+
+    const referencia =
+      doc(db, "usuarios", user.uid);
+
 
     try {
 
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const documento =
+        await getDoc(referencia);
 
-      estado.innerText =
-        "✅ Cuenta creada correctamente.";
+
+      if (!documento.exists()) {
+
+        document
+          .getElementById("panelUsuario")
+          .classList.remove("hidden");
+
+        document
+          .getElementById("usuarioNombre")
+          .innerText =
+          "Sesión iniciada: " + user.email;
+
+        return;
+      }
+
+
+      const datos =
+        documento.data();
+
+
+      document
+        .getElementById("login")
+        .classList.add("hidden");
+
+
+      if (datos.rol === "admin") {
+
+        document
+          .getElementById("panelAdmin")
+          .classList.remove("hidden");
+
+        document
+          .getElementById("adminNombre")
+          .innerText =
+          "Administrador: " + user.email;
+
+      } else {
+
+        document
+          .getElementById("panelUsuario")
+          .classList.remove("hidden");
+
+        document
+          .getElementById("usuarioNombre")
+          .innerText =
+          "Usuario: " + user.email;
+
+      }
 
     } catch (error) {
 
       console.error(error);
 
-      estado.innerText =
-        "❌ No se pudo crear la cuenta.";
+      document
+        .getElementById("mensaje")
+        .innerText =
+        "❌ No se pudo consultar el perfil.";
 
     }
 
+  });
+
+
+  /* CERRAR SESIÓN */
+
+  window.cerrarSesion = async function() {
+
+    await signOut(auth);
+
+    location.reload();
+
   };
 
 
-  window.crearCaso = function() {
+  /* FUNCIONES TEMPORALES */
 
-    mostrarLogin();
-
-    document.getElementById("estado").innerText =
-      "🔐 Inicia sesión para continuar.";
-
-  };
-
-
-  window.buscarCaso = function() {
+  window.reportar = function() {
 
     alert(
-      "El buscador se agregará después de comprobar el inicio de sesión."
+      "Aquí construiremos el formulario para reportar una desaparición."
     );
 
   };
 
 
-  onAuthStateChanged(auth, (user) => {
+  window.buscar = function() {
 
-    if (user) {
+    alert(
+      "Aquí construiremos el buscador de personas."
+    );
 
-      console.log(
-        "Usuario conectado:",
-        user.email
-      );
+  };
 
-    }
 
-  });
+  window.verAlertas = function() {
+
+    document.getElementById("adminMensaje").innerText =
+      "🚨 El módulo de gestión de alertas se construirá en el siguiente paso.";
+
+  };
+
+
+  window.verUsuarios = function() {
+
+    document.getElementById("adminMensaje").innerText =
+      "👥 El módulo de usuarios se construirá en el siguiente paso.";
+
+  };
 
 </script>
 
