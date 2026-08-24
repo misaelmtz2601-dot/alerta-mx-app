@@ -1,283 +1,470 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ALERTA MX - Alertas</title>
+  <title>ALERTA MX - Alertas</title>
 
-<style>
-*{
-  box-sizing:border-box;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f3f3f3;
-  color:#222;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      color: #222;
+    }
 
-header{
-  background:#b00020;
-  color:white;
-  text-align:center;
-  padding:22px;
-  font-size:28px;
-  font-weight:bold;
-}
+    header {
+      background: #b00020;
+      color: white;
+      text-align: center;
+      padding: 22px 15px;
+      font-size: 28px;
+      font-weight: bold;
+    }
 
-.contenedor{
-  max-width:600px;
-  margin:auto;
-  padding:20px;
-}
+    .contenedor {
+      width: 100%;
+      max-width: 650px;
+      margin: auto;
+      padding: 20px;
+    }
 
-.card{
-  background:white;
-  padding:20px;
-  margin-bottom:18px;
-  border-radius:15px;
-  box-shadow:0 3px 12px rgba(0,0,0,.12);
-}
+    .encabezado {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+      margin-bottom: 20px;
+    }
 
-.caso{
-  border:1px solid #ddd;
-  border-radius:12px;
-  padding:16px;
-  margin-top:15px;
-  background:#fff;
-}
+    .encabezado h1 {
+      margin-top: 0;
+      color: #b00020;
+    }
 
-.caso h2{
-  color:#b00020;
-  margin-top:0;
-}
+    .caso {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+      border-left: 6px solid #b00020;
+    }
 
-.estado{
-  color:#16803c;
-  font-weight:bold;
-}
+    .caso h2 {
+      margin-top: 0;
+      color: #b00020;
+    }
 
-.cargando{
-  text-align:center;
-  padding:20px;
-}
+    .dato {
+      margin: 10px 0;
+      line-height: 1.5;
+    }
 
-.vacio{
-  text-align:center;
-  color:#666;
-  padding:20px;
-}
-</style>
+    .estado {
+      display: inline-block;
+      background: #16803c;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .cargando,
+    .vacio,
+    .error {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+    }
+
+    .error {
+      color: #b00020;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #777;
+      font-size: 13px;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-🚨 ALERTA MX
+  🚨 ALERTA MX
 </header>
+
 
 <div class="contenedor">
 
-<div class="card">
+  <div class="encabezado">
 
-<h2>Personas desaparecidas</h2>
+    <h1>Personas desaparecidas</h1>
 
-<p>
-Consulta las alertas que han sido aprobadas
-para su publicación.
-</p>
+    <p>
+      Consulta las alertas que han sido
+      revisadas y aprobadas por ALERTA MX.
+    </p>
+
+  </div>
+
+
+  <div id="lista">
+
+    <div class="cargando">
+      🔄 Cargando alertas...
+    </div>
+
+  </div>
 
 </div>
 
-<div id="lista" class="card">
 
-<div class="cargando">
-🔄 Cargando alertas...
-</div>
-
-</div>
-
-</div>
+<footer>
+  ALERTA MX © 2026
+</footer>
 
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-import {
-getFirestore,
-collection,
-getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    where
+  }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
 
-apiKey:
-"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+  /* FIREBASE */
 
-authDomain:
-"alerta-mx-42492.firebaseapp.com",
+  const firebaseConfig = {
 
-projectId:
-"alerta-mx-42492",
+    apiKey:
+      "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
 
-storageBucket:
-"alerta-mx-42492.firebasestorage.app",
+    authDomain:
+      "alerta-mx-42492.firebaseapp.com",
 
-messagingSenderId:
-"17765892560",
+    projectId:
+      "alerta-mx-42492",
 
-appId:
-"1:17765892560:web:29a16191b3155eae2c39d5"
+    storageBucket:
+      "alerta-mx-42492.firebasestorage.app",
 
-};
+    messagingSenderId:
+      "17765892560",
 
+    appId:
+      "1:17765892560:web:29a16191b3155eae2c39d5"
 
-const app =
-initializeApp(firebaseConfig);
+  };
 
-const db =
-getFirestore(app);
 
+  const app =
+    initializeApp(firebaseConfig);
 
-async function cargarAlertas(){
 
-const lista =
-document.getElementById("lista");
+  const db =
+    getFirestore(app);
 
-try{
 
-const resultados =
-await getDocs(
-collection(db,"casos")
-);
+  const lista =
+    document.getElementById("lista");
 
 
-lista.innerHTML = "";
+  /* CARGAR SOLO CASOS APROBADOS */
 
+  async function cargarAlertas() {
 
-let cantidad = 0;
+    lista.innerHTML = `
+      <div class="cargando">
+        🔄 Cargando alertas...
+      </div>
+    `;
 
 
-resultados.forEach((documento)=>{
+    try {
 
-const caso =
-documento.data();
+      const consulta = query(
 
+        collection(db, "casos"),
 
-/*
-SOLO MOSTRAR CASOS APROBADOS
-*/
+        where(
+          "estado",
+          "==",
+          "aprobado"
+        )
 
-if(caso.estado !== "aprobado"){
-return;
-}
+      );
 
 
-cantidad++;
+      const resultados =
+        await getDocs(consulta);
 
 
-const tarjeta =
-document.createElement("div");
+      /* NO HAY ALERTAS */
 
-tarjeta.className =
-"caso";
+      if (resultados.empty) {
 
+        lista.innerHTML = `
+          <div class="vacio">
 
-tarjeta.innerHTML = `
+            <h2>📭 No hay alertas</h2>
 
-<h2>
-🚨 ${caso.nombre || "Sin nombre"}
-</h2>
+            <p>
+              Actualmente no hay personas
+              desaparecidas con una alerta aprobada.
+            </p>
 
-<p>
-<b>Edad:</b>
-${caso.edad ?? "No indicada"}
-</p>
+          </div>
+        `;
 
-<p>
-<b>Sexo:</b>
-${caso.sexo || "No indicado"}
-</p>
+        return;
+      }
 
-<p>
-<b>Fecha de desaparición:</b>
-${caso.fechaDesaparicion || "No indicada"}
-</p>
 
-<p>
-<b>Lugar donde fue vista:</b>
-${caso.lugarDesaparicion || "No indicado"}
-</p>
+      lista.innerHTML = "";
 
-<p>
-<b>Ciudad / Estado:</b>
-${caso.ciudad || "No indicado"}
-</p>
 
-<p>
-<b>Ropa:</b>
-${caso.ropa || "No indicada"}
-</p>
+      /* MOSTRAR CASOS */
 
-<p>
-<b>Descripción:</b>
-${caso.descripcion || "Sin descripción"}
-</p>
+      resultados.forEach((documento) => {
 
-<p class="estado">
-🟢 ALERTA APROBADA
-</p>
+        const caso =
+          documento.data();
 
-`;
 
-lista.appendChild(tarjeta);
+        const tarjeta =
+          document.createElement("div");
 
-});
 
+        tarjeta.className =
+          "caso";
 
-if(cantidad === 0){
 
-lista.innerHTML = `
+        /* TÍTULO */
 
-<div class="vacio">
+        const titulo =
+          document.createElement("h2");
 
-📭 Actualmente no hay alertas
-aprobadas para mostrar.
+        titulo.textContent =
+          "🚨 " +
+          (caso.nombre || "Sin nombre");
 
-</div>
 
-`;
+        tarjeta.appendChild(titulo);
 
-}
 
+        /* EDAD */
 
-}catch(error){
+        const edad =
+          document.createElement("p");
 
-console.error(error);
+        edad.className =
+          "dato";
 
-lista.innerHTML = `
+        edad.innerHTML =
+          "<strong>Edad:</strong> " +
+          (caso.edad ?? "No indicada");
 
-<div class="vacio">
 
-❌ No se pudieron cargar
-las alertas.
+        tarjeta.appendChild(edad);
 
-</div>
 
-`;
+        /* SEXO */
 
-}
+        const sexo =
+          document.createElement("p");
 
-}
+        sexo.className =
+          "dato";
 
+        sexo.innerHTML =
+          "<strong>Sexo:</strong> " +
+          (caso.sexo || "No indicado");
 
-cargarAlertas();
+
+        tarjeta.appendChild(sexo);
+
+
+        /* FECHA */
+
+        const fecha =
+          document.createElement("p");
+
+        fecha.className =
+          "dato";
+
+        fecha.innerHTML =
+          "<strong>Fecha de desaparición:</strong> " +
+          (caso.fechaDesaparicion ||
+           "No indicada");
+
+
+        tarjeta.appendChild(fecha);
+
+
+        /* LUGAR */
+
+        const lugar =
+          document.createElement("p");
+
+        lugar.className =
+          "dato";
+
+        lugar.innerHTML =
+          "<strong>Último lugar donde fue vista:</strong> " +
+          (caso.lugarDesaparicion ||
+           "No indicado");
+
+
+        tarjeta.appendChild(lugar);
+
+
+        /* CIUDAD */
+
+        const ciudad =
+          document.createElement("p");
+
+        ciudad.className =
+          "dato";
+
+        ciudad.innerHTML =
+          "<strong>Ciudad / Estado:</strong> " +
+          (caso.ciudad ||
+           "No indicado");
+
+
+        tarjeta.appendChild(ciudad);
+
+
+        /* ROPA */
+
+        const ropa =
+          document.createElement("p");
+
+        ropa.className =
+          "dato";
+
+        ropa.innerHTML =
+          "<strong>Ropa que llevaba:</strong> " +
+          (caso.ropa ||
+           "No indicada");
+
+
+        tarjeta.appendChild(ropa);
+
+
+        /* DESCRIPCIÓN */
+
+        const descripcion =
+          document.createElement("p");
+
+        descripcion.className =
+          "dato";
+
+        descripcion.innerHTML =
+          "<strong>Descripción:</strong> " +
+          (caso.descripcion ||
+           "Sin descripción");
+
+
+        tarjeta.appendChild(descripcion);
+
+
+        /* CONTACTO */
+
+        if (caso.contacto) {
+
+          const contacto =
+            document.createElement("p");
+
+          contacto.className =
+            "dato";
+
+          contacto.innerHTML =
+            "<strong>Contacto:</strong> " +
+            caso.contacto;
+
+          tarjeta.appendChild(contacto);
+
+        }
+
+
+        /* ESTADO */
+
+        const estado =
+          document.createElement("div");
+
+        estado.className =
+          "estado";
+
+        estado.textContent =
+          "🟢 ALERTA APROBADA";
+
+
+        tarjeta.appendChild(estado);
+
+
+        /* AGREGAR A LA PÁGINA */
+
+        lista.appendChild(tarjeta);
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Error de Firestore:",
+        error
+      );
+
+
+      lista.innerHTML = `
+        <div class="error">
+
+          <h2>
+            ❌ No se pudieron cargar las alertas
+          </h2>
+
+          <p>
+            No fue posible consultar
+            la base de datos.
+          </p>
+
+          <p>
+            Código: ${error.code || "desconocido"}
+          </p>
+
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  /* INICIAR */
+
+  cargarAlertas();
 
 </script>
 
