@@ -1,187 +1,265 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALERTA MX - Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ALERTA MX</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-    }
-
-    header {
-      background: #b00020;
-      color: white;
-      text-align: center;
-      padding: 22px;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .contenedor {
-      max-width: 450px;
-      margin: 30px auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 3px 12px #0002;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 15px;
-      border: 0;
-      border-radius: 9px;
-      background: #1769e0;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-    }
-
-    #resultado {
-      margin-top: 18px;
-      font-weight: bold;
-    }
-  </style>
+<style>
+body{margin:0;font-family:Arial;background:#f3f3f3;color:#222}
+header{background:#b00020;color:white;text-align:center;padding:22px;font-size:28px;font-weight:bold}
+.contenedor{max-width:500px;margin:auto;padding:20px}
+.card{background:white;padding:22px;margin-bottom:18px;border-radius:15px;box-shadow:0 3px 12px #0002}
+input{width:100%;padding:14px;margin-top:10px;border:1px solid #bbb;border-radius:8px;font-size:16px;box-sizing:border-box}
+button{width:100%;padding:15px;margin-top:12px;border:0;border-radius:9px;font-size:16px;font-weight:bold}
+.azul{background:#1769e0;color:white}
+.rojo{background:#b00020;color:white}
+.negro{background:#222;color:white}
+.verde{background:#16803c;color:white}
+.oculto{display:none}
+.mensaje{font-weight:bold;margin-top:15px}
+</style>
 </head>
 
 <body>
 
-<header>
-  🚨 ALERTA MX
-</header>
+<header>🚨 ALERTA MX</header>
 
 <div class="contenedor">
 
-  <div class="card">
+<section class="card" id="login">
+<h2>Iniciar sesión</h2>
 
-    <h2>Iniciar sesión</h2>
+<input id="email" type="email" placeholder="Correo electrónico">
+<input id="password" type="password" placeholder="Contraseña">
 
-    <input
-      id="email"
-      type="email"
-      placeholder="Correo electrónico"
-    >
+<button class="azul" id="entrar">Entrar</button>
 
-    <input
-      id="password"
-      type="password"
-      placeholder="Contraseña"
-    >
+<p class="mensaje" id="mensaje"></p>
+</section>
 
-    <button id="botonLogin">
-      Entrar
-    </button>
 
-    <p id="resultado"></p>
+<section class="card oculto" id="panelAdmin">
 
-  </div>
+<h2>🛡️ Panel de administrador</h2>
+
+<p id="adminCorreo"></p>
+
+<button class="rojo" id="alertas">
+🚨 Gestionar alertas
+</button>
+
+<button class="azul" id="usuarios">
+👥 Gestionar usuarios
+</button>
+
+<button class="negro" id="buscar">
+🔎 Buscar persona
+</button>
+
+<button class="verde" id="salir">
+🚪 Cerrar sesión
+</button>
+
+<p class="mensaje" id="panelMensaje"></p>
+
+</section>
+
+
+<section class="card oculto" id="panelUsuario">
+
+<h2>👤 Panel de usuario</h2>
+
+<p id="usuarioCorreo"></p>
+
+<button class="rojo" id="reportar">
+🚨 Reportar desaparición
+</button>
+
+<button class="negro" id="buscarUsuario">
+🔎 Buscar persona
+</button>
+
+<button class="verde" id="salirUsuario">
+🚪 Cerrar sesión
+</button>
+
+</section>
 
 </div>
 
+
 <script type="module">
 
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  import {
-    getAuth,
-    signInWithEmailAndPassword
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+getAuth,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-
-  const firebaseConfig = {
-
-    apiKey: "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
-
-    authDomain: "alerta-mx-42492.firebaseapp.com",
-
-    projectId: "alerta-mx-42492",
-
-    storageBucket: "alerta-mx-42492.firebasestorage.app",
-
-    messagingSenderId: "17765892560",
-
-    appId: "1:17765892560:web:29a16191b3155eae2c39d5"
-
-  };
+import {
+getFirestore,
+doc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-  const app = initializeApp(firebaseConfig);
-
-  const auth = getAuth(app);
-
-
-  document
-    .getElementById("botonLogin")
-    .addEventListener("click", async () => {
-
-      const email =
-        document.getElementById("email").value.trim();
-
-      const password =
-        document.getElementById("password").value;
-
-      const resultado =
-        document.getElementById("resultado");
+const firebaseConfig = {
+apiKey:"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+authDomain:"alerta-mx-42492.firebaseapp.com",
+projectId:"alerta-mx-42492",
+storageBucket:"alerta-mx-42492.firebasestorage.app",
+messagingSenderId:"17765892560",
+appId:"1:17765892560:web:29a16191b3155eae2c39d5"
+};
 
 
-      if (!email || !password) {
-
-        resultado.innerText =
-          "⚠️ Escribe correo y contraseña.";
-
-        return;
-      }
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
 
-      resultado.innerText =
-        "🔐 Iniciando sesión...";
+const login=document.getElementById("login");
+const panelAdmin=document.getElementById("panelAdmin");
+const panelUsuario=document.getElementById("panelUsuario");
+const mensaje=document.getElementById("mensaje");
 
 
-      try {
+document.getElementById("entrar").addEventListener("click",async()=>{
 
-        const credencial =
-          await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+
+if(!email||!password){
+mensaje.textContent="⚠️ Escribe correo y contraseña.";
+return;
+}
+
+mensaje.textContent="🔐 Iniciando sesión...";
+
+try{
+
+await signInWithEmailAndPassword(auth,email,password);
+
+}catch(error){
+
+console.error(error);
+mensaje.textContent="❌ Correo o contraseña incorrectos.";
+
+}
+
+});
 
 
-        resultado.innerText =
-          "✅ SESIÓN INICIADA: " +
-          credencial.user.email;
+onAuthStateChanged(auth,async(user)=>{
+
+if(!user){
+
+login.classList.remove("oculto");
+panelAdmin.classList.add("oculto");
+panelUsuario.classList.add("oculto");
+
+return;
+}
+
+try{
+
+const referencia=doc(db,"usuarios",user.uid);
+const resultado=await getDoc(referencia);
+
+login.classList.add("oculto");
+
+if(resultado.exists() && resultado.data().rol==="admin"){
+
+panelAdmin.classList.remove("oculto");
+panelUsuario.classList.add("oculto");
+
+document.getElementById("adminCorreo").textContent=
+"Administrador: "+user.email;
+
+}else{
+
+panelUsuario.classList.remove("oculto");
+panelAdmin.classList.add("oculto");
+
+document.getElementById("usuarioCorreo").textContent=
+"Usuario: "+user.email;
+
+}
+
+}catch(error){
+
+console.error(error);
+
+login.classList.remove("oculto");
+mensaje.textContent="❌ No se pudo consultar el perfil.";
+
+}
+
+});
 
 
-      } catch (error) {
+async function cerrarSesion(){
 
-        console.error(error);
+await signOut(auth);
 
-        resultado.innerText =
-          "❌ Error: " + error.code;
+}
 
-      }
 
-    });
+document.getElementById("salir")
+.addEventListener("click",cerrarSesion);
+
+document.getElementById("salirUsuario")
+.addEventListener("click",cerrarSesion);
+
+
+document.getElementById("alertas")
+.addEventListener("click",()=>{
+
+document.getElementById("panelMensaje").textContent=
+"🚨 El módulo de alertas será el siguiente.";
+
+});
+
+
+document.getElementById("usuarios")
+.addEventListener("click",()=>{
+
+document.getElementById("panelMensaje").textContent=
+"👥 El módulo de usuarios será el siguiente.";
+
+});
+
+
+document.getElementById("buscar")
+.addEventListener("click",()=>{
+
+document.getElementById("panelMensaje").textContent=
+"🔎 El buscador será el siguiente módulo.";
+
+});
+
+
+document.getElementById("reportar")
+.addEventListener("click",()=>{
+
+alert("Aquí construiremos el formulario de reporte.");
+
+});
+
+
+document.getElementById("buscarUsuario")
+.addEventListener("click",()=>{
+
+alert("Aquí construiremos el buscador.");
+
+});
 
 </script>
 
