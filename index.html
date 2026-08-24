@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALERTA MX</title>
+  <title>ALERTA MX - Login</title>
 
   <style>
-    * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f3f3f3;
-      color: #222;
     }
 
     header {
@@ -20,82 +17,48 @@
       color: white;
       text-align: center;
       padding: 22px;
-      font-size: 27px;
+      font-size: 28px;
       font-weight: bold;
     }
 
-    main {
-      max-width: 550px;
-      margin: auto;
-      padding: 18px;
+    .contenedor {
+      max-width: 450px;
+      margin: 30px auto;
+      padding: 20px;
     }
 
     .card {
       background: white;
-      padding: 20px;
-      margin-bottom: 18px;
+      padding: 25px;
       border-radius: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+      box-shadow: 0 3px 12px #0002;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
     }
 
     button {
       width: 100%;
+      padding: 15px;
+      margin-top: 15px;
       border: 0;
-      border-radius: 10px;
-      padding: 14px;
-      margin-top: 10px;
-      font-size: 16px;
+      border-radius: 9px;
+      background: #1769e0;
+      color: white;
+      font-size: 17px;
       font-weight: bold;
-      cursor: pointer;
     }
 
-    .red { background: #b00020; color: white; }
-    .dark { background: #222; color: white; }
-    .blue { background: #1769e0; color: white; }
-    .green { background: #16803c; color: white; }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .bienvenida {
+    #resultado {
+      margin-top: 18px;
       font-weight: bold;
-      color: #16803c;
-    }
-
-    .admin {
-      border-left: 5px solid #b00020;
-    }
-
-    .form-title {
-      margin-bottom: 5px;
-    }
-
-    .nota {
-      font-size: 13px;
-      color: #666;
-      margin-top: 10px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #777;
-      font-size: 13px;
     }
   </style>
 </head>
@@ -106,27 +69,9 @@
   🚨 ALERTA MX
 </header>
 
-<main>
+<div class="contenedor">
 
-  <!-- INICIO -->
-  <section class="card" id="inicio">
-
-    <h2>Bienvenido a ALERTA MX</h2>
-
-    <p>
-      Plataforma para consultar y gestionar información
-      relacionada con personas desaparecidas.
-    </p>
-
-    <button class="red" onclick="mostrarLogin()">
-      👤 Iniciar sesión
-    </button>
-
-  </section>
-
-
-  <!-- LOGIN -->
-  <section class="card hidden" id="login">
+  <div class="card">
 
     <h2>Iniciar sesión</h2>
 
@@ -142,165 +87,15 @@
       placeholder="Contraseña"
     >
 
-    <button class="blue" onclick="iniciarSesion()">
+    <button id="botonLogin">
       Entrar
     </button>
 
-    <p id="mensaje"></p>
+    <p id="resultado"></p>
 
-  </section>
+  </div>
 
-
-  <!-- PANEL USUARIO -->
-  <section class="card hidden" id="panelUsuario">
-
-    <h2>👤 Panel de usuario</h2>
-
-    <p class="bienvenida" id="usuarioNombre"></p>
-
-    <button class="red" onclick="abrirFormulario()">
-      🚨 Reportar desaparición
-    </button>
-
-    <button class="dark" onclick="buscar()">
-      🔎 Buscar persona
-    </button>
-
-    <button class="green" onclick="cerrarSesion()">
-      🚪 Cerrar sesión
-    </button>
-
-  </section>
-
-
-  <!-- PANEL ADMIN -->
-  <section class="card admin hidden" id="panelAdmin">
-
-    <h2>🛡️ Panel de administrador</h2>
-
-    <p class="bienvenida" id="adminNombre"></p>
-
-    <button class="red" onclick="abrirFormulario()">
-      🚨 Crear reporte
-    </button>
-
-    <button class="blue" onclick="verAlertas()">
-      📋 Ver reportes
-    </button>
-
-    <button class="dark" onclick="verUsuarios()">
-      👥 Usuarios
-    </button>
-
-    <button class="green" onclick="cerrarSesion()">
-      🚪 Cerrar sesión
-    </button>
-
-    <p id="adminMensaje"></p>
-
-  </section>
-
-
-  <!-- FORMULARIO -->
-  <section class="card hidden" id="formulario">
-
-    <h2 class="form-title">
-      🚨 Reportar desaparición
-    </h2>
-
-    <p>
-      Completa los datos de la persona desaparecida.
-    </p>
-
-    <input
-      id="nombrePersona"
-      type="text"
-      placeholder="Nombre completo"
-    >
-
-    <input
-      id="edadPersona"
-      type="number"
-      min="0"
-      placeholder="Edad"
-    >
-
-    <select id="sexoPersona">
-      <option value="">Selecciona sexo</option>
-      <option value="Femenino">Femenino</option>
-      <option value="Masculino">Masculino</option>
-      <option value="No especificado">No especificado</option>
-    </select>
-
-    <input
-      id="fechaDesaparicion"
-      type="date"
-    >
-
-    <input
-      id="lugarDesaparicion"
-      type="text"
-      placeholder="Lugar donde fue vista por última vez"
-    >
-
-    <input
-      id="ciudadDesaparicion"
-      type="text"
-      placeholder="Ciudad / Estado"
-    >
-
-    <input
-      id="ropaPersona"
-      type="text"
-      placeholder="Ropa que llevaba"
-    >
-
-    <textarea
-      id="descripcionPersona"
-      placeholder="Descripción física y señas particulares"
-    ></textarea>
-
-    <input
-      id="contactoReporte"
-      type="text"
-      placeholder="Teléfono o medio de contacto"
-    >
-
-    <p class="nota">
-      No publiques información sensible innecesaria.
-      Los reportes deberán ser revisados antes de difundirse.
-    </p>
-
-    <button class="red" onclick="guardarReporte()">
-      💾 Guardar reporte
-    </button>
-
-    <button class="dark" onclick="cerrarFormulario()">
-      Cancelar
-    </button>
-
-    <p id="formMensaje"></p>
-
-  </section>
-
-
-  <!-- REPORTES -->
-  <section class="card hidden" id="listaReportes">
-
-    <h2>📋 Reportes</h2>
-
-    <div id="reportesContenido">
-      Cargando...
-    </div>
-
-  </section>
-
-</main>
-
-<footer>
-  ALERTA MX © 2026
-</footer>
-
+</div>
 
 <script type="module">
 
@@ -309,30 +104,24 @@
 
   import {
     getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
+    signInWithEmailAndPassword
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    doc,
-    getDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
   const firebaseConfig = {
+
     apiKey: "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+
     authDomain: "alerta-mx-42492.firebaseapp.com",
+
     projectId: "alerta-mx-42492",
+
     storageBucket: "alerta-mx-42492.firebasestorage.app",
+
     messagingSenderId: "17765892560",
-    appId: "1:17765892560:web:29a16191b3155eae2c39d5",
-    measurementId: "G-4Y6N9Q47XB"
+
+    appId: "1:17765892560:web:29a16191b3155eae2c39d5"
+
   };
 
 
@@ -340,359 +129,61 @@
 
   const auth = getAuth(app);
 
-  const db = getFirestore(app);
 
+  document
+    .getElementById("botonLogin")
+    .addEventListener("click", async () => {
 
-  /* LOGIN */
+      const email =
+        document.getElementById("email").value.trim();
 
-  window.mostrarLogin = function() {
+      const password =
+        document.getElementById("password").value;
 
-    document.getElementById("inicio")
-      .classList.add("hidden");
+      const resultado =
+        document.getElementById("resultado");
 
-    document.getElementById("login")
-      .classList.remove("hidden");
 
-  };
+      if (!email || !password) {
 
-
-  window.iniciarSesion = async function() {
-
-    const email =
-      document.getElementById("email").value.trim();
-
-    const password =
-      document.getElementById("password").value;
-
-    const mensaje =
-      document.getElementById("mensaje");
-
-
-    if (!email || !password) {
-
-      mensaje.innerText =
-        "⚠️ Escribe correo y contraseña.";
-
-      return;
-    }
-
-
-    mensaje.innerText =
-      "🔐 Iniciando sesión...";
-
-
-    try {
-
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      mensaje.innerText =
-        "❌ Correo o contraseña incorrectos.";
-
-    }
-
-  };
-
-
-  /* USUARIO ACTUAL */
-
-  onAuthStateChanged(auth, async (user) => {
-
-    if (!user) {
-
-      return;
-    }
-
-
-    const referencia =
-      doc(db, "usuarios", user.uid);
-
-
-    try {
-
-      const documento =
-        await getDoc(referencia);
-
-
-      document
-        .getElementById("login")
-        .classList.add("hidden");
-
-
-      if (
-        documento.exists() &&
-        documento.data().rol === "admin"
-      ) {
-
-        document
-          .getElementById("panelAdmin")
-          .classList.remove("hidden");
-
-        document
-          .getElementById("adminNombre")
-          .innerText =
-          "Administrador: " + user.email;
-
-      } else {
-
-        document
-          .getElementById("panelUsuario")
-          .classList.remove("hidden");
-
-        document
-          .getElementById("usuarioNombre")
-          .innerText =
-          "Usuario: " + user.email;
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "No se pudo consultar el perfil."
-      );
-
-    }
-
-  });
-
-
-  /* FORMULARIO */
-
-  window.abrirFormulario = function() {
-
-    document
-      .getElementById("formulario")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("formulario")
-      .scrollIntoView({
-        behavior: "smooth"
-      });
-
-  };
-
-
-  window.cerrarFormulario = function() {
-
-    document
-      .getElementById("formulario")
-      .classList.add("hidden");
-
-  };
-
-
-  /* GUARDAR REPORTE */
-
-  window.guardarReporte = async function() {
-
-    const user = auth.currentUser;
-
-    const mensaje =
-      document.getElementById("formMensaje");
-
-
-    if (!user) {
-
-      mensaje.innerText =
-        "❌ Debes iniciar sesión.";
-
-      return;
-    }
-
-
-    const nombre =
-      document.getElementById("nombrePersona").value.trim();
-
-    const edad =
-      document.getElementById("edadPersona").value;
-
-    const sexo =
-      document.getElementById("sexoPersona").value;
-
-    const fecha =
-      document.getElementById("fechaDesaparicion").value;
-
-    const lugar =
-      document.getElementById("lugarDesaparicion").value.trim();
-
-    const ciudad =
-      document.getElementById("ciudadDesaparicion").value.trim();
-
-    const ropa =
-      document.getElementById("ropaPersona").value.trim();
-
-    const descripcion =
-      document.getElementById("descripcionPersona").value.trim();
-
-    const contacto =
-      document.getElementById("contactoReporte").value.trim();
-
-
-    if (!nombre || !fecha || !lugar) {
-
-      mensaje.innerText =
-        "⚠️ Nombre, fecha y lugar son obligatorios.";
-
-      return;
-    }
-
-
-    mensaje.innerText =
-      "💾 Guardando reporte...";
-
-
-    try {
-
-      await addDoc(
-        collection(db, "reportes"),
-        {
-
-          nombre: nombre,
-
-          edad: edad ? Number(edad) : null,
-
-          sexo: sexo,
-
-          fechaDesaparicion: fecha,
-
-          lugarDesaparicion: lugar,
-
-          ciudadDesaparicion: ciudad,
-
-          ropa: ropa,
-
-          descripcion: descripcion,
-
-          contacto: contacto,
-
-          creadoPor: user.uid,
-
-          correoCreador: user.email,
-
-          estado: "pendiente",
-
-          creadoEn: serverTimestamp()
-
-        }
-      );
-
-
-      mensaje.innerText =
-        "✅ Reporte guardado y enviado a revisión.";
-
-
-      document
-        .getElementById("nombrePersona")
-        .value = "";
-
-      document
-        .getElementById("edadPersona")
-        .value = "";
-
-      document
-        .getElementById("sexoPersona")
-        .value = "";
-
-      document
-        .getElementById("fechaDesaparicion")
-        .value = "";
-
-      document
-        .getElementById("lugarDesaparicion")
-        .value = "";
-
-      document
-        .getElementById("ciudadDesaparicion")
-        .value = "";
-
-      document
-        .getElementById("ropaPersona")
-        .value = "";
-
-      document
-        .getElementById("descripcionPersona")
-        .value = "";
-
-      document
-        .getElementById("contactoReporte")
-        .value = "";
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      mensaje.innerText =
-        "❌ No se pudo guardar el reporte.";
-
-    }
-
-  };
-
-
-  /* VER REPORTES */
-
-  window.verAlertas = async function() {
-
-    const lista =
-      document.getElementById("listaReportes");
-
-    const contenido =
-      document.getElementById("reportesContenido");
-
-
-    lista.classList.remove("hidden");
-
-    contenido.innerHTML =
-      "Cargando reportes...";
-
-
-    try {
-
-      const consulta =
-        await getDocs(
-          collection(db, "reportes")
-        );
-
-
-      if (consulta.empty) {
-
-        contenido.innerHTML =
-          "<p>No hay reportes todavía.</p>";
+        resultado.innerText =
+          "⚠️ Escribe correo y contraseña.";
 
         return;
       }
 
 
-      contenido.innerHTML = "";
+      resultado.innerText =
+        "🔐 Iniciando sesión...";
 
 
-      consulta.forEach((documento) => {
+      try {
 
-        const reporte =
-          documento.data();
-
-
-        const tarjeta =
-          document.createElement("div");
-
-        tarjeta.className = "card";
+        const credencial =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
 
 
-        tarjeta.innerHTML = `
+        resultado.innerText =
+          "✅ SESIÓN INICIADA: " +
+          credencial.user.email;
 
-          <h3>🚨 ${reporte.nombre || "Sin nombre"}</h3>
 
-          <p>
-           
+      } catch (error) {
+
+        console.error(error);
+
+        resultado.innerText =
+          "❌ Error: " + error.code;
+
+      }
+
+    });
+
+</script>
+
+</body>
+</html>
