@@ -2,113 +2,260 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ALERTA MX</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f3f3f3;color:#222}
-header{background:#b00020;color:white;text-align:center;padding:22px;font-size:28px;font-weight:bold}
-.contenedor{max-width:550px;margin:auto;padding:20px}
-.card{background:white;padding:22px;margin-bottom:18px;border-radius:15px;box-shadow:0 3px 12px #0002}
-input{width:100%;padding:14px;margin-top:10px;border:1px solid #bbb;border-radius:8px;font-size:16px;box-sizing:border-box}
-button{width:100%;padding:15px;margin-top:12px;border:0;border-radius:9px;font-size:16px;font-weight:bold}
-.azul{background:#1769e0;color:white}
-.rojo{background:#b00020;color:white}
-.negro{background:#222;color:white}
-.verde{background:#16803c;color:white}
-.gris{background:#666;color:white}
-.oculto{display:none}
-.mensaje{font-weight:bold;margin-top:15px}
-.reporte{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:15px}
-.estado{font-weight:bold}
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f3f3;
+  color:#222;
+}
+
+header{
+  background:#b00020;
+  color:white;
+  text-align:center;
+  padding:22px;
+  font-size:28px;
+  font-weight:bold;
+}
+
+.contenedor{
+  max-width:550px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  margin-bottom:18px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:1px solid #bbb;
+  border-radius:8px;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  border:0;
+  border-radius:9px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.azul{
+  background:#1769e0;
+  color:white;
+}
+
+.rojo{
+  background:#b00020;
+  color:white;
+}
+
+.negro{
+  background:#222;
+  color:white;
+}
+
+.verde{
+  background:#16803c;
+  color:white;
+}
+
+.gris{
+  background:#666;
+  color:white;
+}
+
+.oculto{
+  display:none;
+}
+
+.mensaje{
+  font-weight:bold;
+  margin-top:15px;
+}
+
+.reporte{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:15px;
+  margin-top:15px;
+  background:#fafafa;
+}
+
+.estado{
+  font-weight:bold;
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#777;
+  font-size:13px;
+}
 </style>
 </head>
 
 <body>
 
-<header>🚨 ALERTA MX</header>
+<header>
+🚨 ALERTA MX
+</header>
 
 <div class="contenedor">
 
+<!-- LOGIN -->
+
 <section class="card" id="login">
+
 <h2>Iniciar sesión</h2>
 
-<input id="email" type="email" placeholder="Correo electrónico">
-<input id="password" type="password" placeholder="Contraseña">
+<input
+id="email"
+type="email"
+placeholder="Correo electrónico">
 
-<button class="azul" id="entrar">Entrar</button>
+<input
+id="password"
+type="password"
+placeholder="Contraseña">
 
-<p class="mensaje" id="mensaje"></p>
+<button
+class="azul"
+id="entrar">
+Entrar
+</button>
+
+<p
+class="mensaje"
+id="mensaje">
+</p>
+
 </section>
 
 
-<section class="card oculto" id="panelAdmin">
+<!-- PANEL ADMIN -->
+
+<section
+class="card oculto"
+id="panelAdmin">
 
 <h2>🛡️ Panel de administrador</h2>
 
 <p id="adminCorreo"></p>
 
-<button class="rojo" id="alertas">
+<button
+class="rojo"
+id="alertas">
 🚨 Gestionar alertas
 </button>
 
-<button class="azul" id="usuarios">
+<button
+class="azul"
+id="usuarios">
 👥 Gestionar usuarios
 </button>
 
-<button class="negro" id="buscar">
+<button
+class="negro"
+id="buscar">
 🔎 Buscar persona
 </button>
 
-<button class="verde" id="salir">
+<button
+class="verde"
+id="salir">
 🚪 Cerrar sesión
 </button>
 
-<p class="mensaje" id="panelMensaje"></p>
+<p
+class="mensaje"
+id="panelMensaje">
+</p>
 
 </section>
 
 
-<section class="card oculto" id="panelUsuario">
+<!-- PANEL USUARIO -->
+
+<section
+class="card oculto"
+id="panelUsuario">
 
 <h2>👤 Panel de usuario</h2>
 
 <p id="usuarioCorreo"></p>
 
-<button class="rojo" id="reportar">
+<button
+class="rojo"
+id="reportar">
 🚨 Reportar desaparición
 </button>
 
-<button class="negro" id="buscarUsuario">
+<button
+class="negro"
+id="buscarUsuario">
 🔎 Buscar persona
 </button>
 
-<button class="verde" id="salirUsuario">
+<button
+class="verde"
+id="salirUsuario">
 🚪 Cerrar sesión
 </button>
 
 </section>
 
 
-<section class="card oculto" id="listaAlertas">
+<!-- LISTA DE ALERTAS -->
+
+<section
+class="card oculto"
+id="listaAlertas">
 
 <h2>📋 Gestionar alertas</h2>
 
 <p>
-Aquí aparecen los reportes enviados a ALERTA MX.
+Reportes registrados en ALERTA MX:
 </p>
 
 <div id="contenidoAlertas">
-Cargando reportes...
+Cargando...
 </div>
 
-<button class="gris" id="volverPanel">
+<button
+class="gris"
+id="volverPanel">
 ⬅️ Volver al panel
 </button>
 
 </section>
 
 </div>
+
+
+<footer>
+ALERTA MX © 2026
+</footer>
 
 
 <script type="module">
@@ -128,106 +275,186 @@ import {
 getFirestore,
 collection,
 getDocs,
-query,
-orderBy
+doc,
+getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
+/* FIREBASE */
+
 const firebaseConfig = {
-apiKey:"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
-authDomain:"alerta-mx-42492.firebaseapp.com",
-projectId:"alerta-mx-42492",
-storageBucket:"alerta-mx-42492.firebasestorage.app",
-messagingSenderId:"17765892560",
-appId:"1:17765892560:web:29a16191b3155eae2c39d5"
+
+apiKey:
+"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+
+authDomain:
+"alerta-mx-42492.firebaseapp.com",
+
+projectId:
+"alerta-mx-42492",
+
+storageBucket:
+"alerta-mx-42492.firebasestorage.app",
+
+messagingSenderId:
+"17765892560",
+
+appId:
+"1:17765892560:web:29a16191b3155eae2c39d5"
+
 };
 
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app =
+initializeApp(firebaseConfig);
+
+const auth =
+getAuth(app);
+
+const db =
+getFirestore(app);
 
 
-const login=document.getElementById("login");
-const panelAdmin=document.getElementById("panelAdmin");
-const panelUsuario=document.getElementById("panelUsuario");
-const listaAlertas=document.getElementById("listaAlertas");
+/* ELEMENTOS */
+
+const login =
+document.getElementById("login");
+
+const panelAdmin =
+document.getElementById("panelAdmin");
+
+const panelUsuario =
+document.getElementById("panelUsuario");
+
+const listaAlertas =
+document.getElementById("listaAlertas");
+
+const mensaje =
+document.getElementById("mensaje");
 
 
-/* INICIAR SESIÓN */
+/* LOGIN */
 
-document.getElementById("entrar")
-.addEventListener("click",async()=>{
+document
+.getElementById("entrar")
+.addEventListener("click", async () => {
 
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
-const mensaje=document.getElementById("mensaje");
+const email =
+document.getElementById("email")
+.value
+.trim();
 
-if(!email||!password){
+const password =
+document.getElementById("password")
+.value;
 
-mensaje.textContent="⚠️ Escribe correo y contraseña.";
+
+if(!email || !password){
+
+mensaje.textContent =
+"⚠️ Escribe correo y contraseña.";
+
 return;
 
 }
 
-mensaje.textContent="🔐 Iniciando sesión...";
+
+mensaje.textContent =
+"🔐 Iniciando sesión...";
+
 
 try{
 
-await signInWithEmailAndPassword(auth,email,password);
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
 
 }catch(error){
 
 console.error(error);
-mensaje.textContent="❌ Correo o contraseña incorrectos.";
+
+mensaje.textContent =
+"❌ Correo o contraseña incorrectos.";
 
 }
 
 });
 
 
-/* DETECTAR USUARIO */
+/* DETECTAR SESIÓN */
 
-onAuthStateChanged(auth,async(user)=>{
+onAuthStateChanged(
+auth,
+async (user) => {
 
 if(!user){
 
 login.classList.remove("oculto");
+
 panelAdmin.classList.add("oculto");
+
 panelUsuario.classList.add("oculto");
+
 listaAlertas.classList.add("oculto");
 
 return;
 
 }
 
+
 try{
 
-const {getFirestore,doc,getDoc}=await import(
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+const referencia =
+doc(
+db,
+"usuarios",
+user.uid
 );
 
-const referencia=doc(db,"usuarios",user.uid);
-const resultado=await getDoc(referencia);
+const resultado =
+await getDoc(referencia);
+
 
 login.classList.add("oculto");
 
-if(resultado.exists() && resultado.data().rol==="admin"){
 
-panelAdmin.classList.remove("oculto");
-panelUsuario.classList.add("oculto");
+if(
+resultado.exists() &&
+resultado.data().rol === "admin"
+){
 
-document.getElementById("adminCorreo").textContent=
-"Administrador: "+user.email;
+panelAdmin.classList.remove(
+"oculto"
+);
+
+panelUsuario.classList.add(
+"oculto"
+);
+
+document
+.getElementById("adminCorreo")
+.textContent =
+"Administrador: " +
+user.email;
 
 }else{
 
-panelUsuario.classList.remove("oculto");
-panelAdmin.classList.add("oculto");
+panelUsuario.classList.remove(
+"oculto"
+);
 
-document.getElementById("usuarioCorreo").textContent=
-"Usuario: "+user.email;
+panelAdmin.classList.add(
+"oculto"
+);
+
+document
+.getElementById("usuarioCorreo")
+.textContent =
+"Usuario: " +
+user.email;
 
 }
 
@@ -235,9 +462,11 @@ document.getElementById("usuarioCorreo").textContent=
 
 console.error(error);
 
-login.classList.remove("oculto");
+login.classList.remove(
+"oculto"
+);
 
-document.getElementById("mensaje").textContent=
+mensaje.textContent =
 "❌ No se pudo consultar el perfil.";
 
 }
@@ -247,71 +476,303 @@ document.getElementById("mensaje").textContent=
 
 /* GESTIONAR ALERTAS */
 
-document.getElementById("alertas")
-.addEventListener("click", async () => {
+document
+.getElementById("alertas")
+.addEventListener(
+"click",
+async () => {
 
-  panelAdmin.classList.add("oculto");
-  listaAlertas.classList.remove("oculto");
+panelAdmin.classList.add(
+"oculto"
+);
 
-  const contenido =
-    document.getElementById("contenidoAlertas");
+listaAlertas.classList.remove(
+"oculto"
+);
 
-  contenido.innerHTML = "🔄 Cargando reportes...";
 
-  try {
+const contenido =
+document.getElementById(
+"contenidoAlertas"
+);
 
-    const resultados =
-      await getDocs(collection(db, "reportes"));
+contenido.innerHTML =
+"🔄 Cargando reportes...";
 
-    if (resultados.empty) {
 
-      contenido.innerHTML =
-        "<p>📭 No hay reportes registrados todavía.</p>";
+try{
 
-      return;
-    }
+const resultados =
+await getDocs(
+collection(
+db,
+"reportes"
+)
+);
 
-    contenido.innerHTML = "";
 
-    resultados.forEach((documento) => {
+if(resultados.empty){
 
-      const datos = documento.data();
+contenido.innerHTML =
+"<p>📭 No hay reportes registrados todavía.</p>";
 
-      const tarjeta =
-        document.createElement("div");
+return;
 
-      tarjeta.className = "reporte";
+}
 
-      tarjeta.innerHTML = `
-        <h3>🚨 ${datos.nombre || "Sin nombre"}</h3>
 
-        <p><b>Edad:</b>
-        ${datos.edad ?? "No indicada"}</p>
+contenido.innerHTML = "";
 
-        <p><b>Sexo:</b>
-        ${datos.sexo || "No indicado"}</p>
 
-        <p><b>Fecha:</b>
-        ${datos.fechaDesaparicion || "No indicada"}</p>
+resultados.forEach(
+(documento) => {
 
-        <p><b>Lugar:</b>
-        ${datos.lugarDesaparicion || "No indicado"}</p>
+const datos =
+documento.data();
 
-        <p><b>Estado:</b>
-        ${datos.estado || "pendiente"}</p>
-      `;
 
-      contenido.appendChild(tarjeta);
+const tarjeta =
+document.createElement(
+"div"
+);
 
-    });
+tarjeta.className =
+"reporte";
 
-  } catch (error) {
 
-    console.error(error);
+const titulo =
+document.createElement(
+"h3"
+);
 
-    contenido.innerHTML =
-      "❌ No se pudieron cargar los reportes.";
+titulo.textContent =
+"🚨 " +
+(datos.nombre ||
+"Sin nombre");
 
-  }
+
+const edad =
+document.createElement(
+"p"
+);
+
+edad.innerHTML =
+"<b>Edad:</b> " +
+(datos.edad ??
+"No indicada");
+
+
+const sexo =
+document.createElement(
+"p"
+);
+
+sexo.innerHTML =
+"<b>Sexo:</b> " +
+(datos.sexo ||
+"No indicado");
+
+
+const fecha =
+document.createElement(
+"p"
+);
+
+fecha.innerHTML =
+"<b>Fecha de desaparición:</b> " +
+(datos.fechaDesaparicion ||
+"No indicada");
+
+
+const lugar =
+document.createElement(
+"p"
+);
+
+lugar.innerHTML =
+"<b>Lugar:</b> " +
+(datos.lugarDesaparicion ||
+"No indicado");
+
+
+const ciudad =
+document.createElement(
+"p"
+);
+
+ciudad.innerHTML =
+"<b>Ciudad / Estado:</b> " +
+(datos.ciudadDesaparicion ||
+"No indicado");
+
+
+const estado =
+document.createElement(
+"p"
+);
+
+estado.className =
+"estado";
+
+estado.textContent =
+"Estado: " +
+(datos.estado ||
+"pendiente");
+
+
+tarjeta.appendChild(
+titulo
+);
+
+tarjeta.appendChild(
+edad
+);
+
+tarjeta.appendChild(
+sexo
+);
+
+tarjeta.appendChild(
+fecha
+);
+
+tarjeta.appendChild(
+lugar
+);
+
+tarjeta.appendChild(
+ciudad
+);
+
+tarjeta.appendChild(
+estado
+);
+
+
+contenido.appendChild(
+tarjeta
+);
 
 });
+
+}catch(error){
+
+console.error(error);
+
+contenido.innerHTML =
+"❌ No se pudieron cargar los reportes.";
+
+}
+
+});
+
+
+/* VOLVER AL PANEL */
+
+document
+.getElementById("volverPanel")
+.addEventListener(
+"click",
+() => {
+
+listaAlertas.classList.add(
+"oculto"
+);
+
+panelAdmin.classList.remove(
+"oculto"
+);
+
+});
+
+
+/* USUARIOS */
+
+document
+.getElementById("usuarios")
+.addEventListener(
+"click",
+() => {
+
+document
+.getElementById("panelMensaje")
+.textContent =
+"👥 El módulo de usuarios será el siguiente.";
+
+});
+
+
+/* BUSCAR */
+
+document
+.getElementById("buscar")
+.addEventListener(
+"click",
+() => {
+
+document
+.getElementById("panelMensaje")
+.textContent =
+"🔎 El buscador será el siguiente.";
+
+});
+
+
+/* REPORTAR */
+
+document
+.getElementById("reportar")
+.addEventListener(
+"click",
+() => {
+
+alert(
+"El formulario de reporte se agregará después."
+);
+
+});
+
+
+/* BUSCAR USUARIO */
+
+document
+.getElementById("buscarUsuario")
+.addEventListener(
+"click",
+() => {
+
+alert(
+"El buscador se agregará después."
+);
+
+});
+
+
+/* CERRAR SESIÓN */
+
+async function cerrarSesion(){
+
+await signOut(auth);
+
+}
+
+
+document
+.getElementById("salir")
+.addEventListener(
+"click",
+cerrarSesion
+);
+
+
+document
+.getElementById("salirUsuario")
+.addEventListener(
+"click",
+cerrarSesion
+);
+
+</script>
+
+</body>
+</html>
