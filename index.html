@@ -248,181 +248,70 @@ document.getElementById("mensaje").textContent=
 /* GESTIONAR ALERTAS */
 
 document.getElementById("alertas")
-.addEventListener("click",async()=>{
+.addEventListener("click", async () => {
 
-panelAdmin.classList.add("oculto");
-listaAlertas.classList.remove("oculto");
+  panelAdmin.classList.add("oculto");
+  listaAlertas.classList.remove("oculto");
 
-const contenido=
-document.getElementById("contenidoAlertas");
+  const contenido =
+    document.getElementById("contenidoAlertas");
 
-contenido.innerHTML="🔄 Cargando reportes...";
+  contenido.innerHTML = "🔄 Cargando reportes...";
 
+  try {
 
-try{
+    const resultados =
+      await getDocs(collection(db, "reportes"));
 
-const referencia=
-collection(db,"reportes");
+    if (resultados.empty) {
 
-const consulta=
-query(referencia,orderBy("creadoEn","desc"));
+      contenido.innerHTML =
+        "<p>📭 No hay reportes registrados todavía.</p>";
 
-const resultados=
-await getDocs(consulta);
+      return;
+    }
 
+    contenido.innerHTML = "";
 
-if(resultados.empty){
+    resultados.forEach((documento) => {
 
-contenido.innerHTML=
-"<p>📭 No hay reportes registrados todavía.</p>";
+      const datos = documento.data();
 
-return;
+      const tarjeta =
+        document.createElement("div");
 
-}
+      tarjeta.className = "reporte";
 
+      tarjeta.innerHTML = `
+        <h3>🚨 ${datos.nombre || "Sin nombre"}</h3>
 
-contenido.innerHTML="";
+        <p><b>Edad:</b>
+        ${datos.edad ?? "No indicada"}</p>
 
+        <p><b>Sexo:</b>
+        ${datos.sexo || "No indicado"}</p>
 
-resultados.forEach((documento)=>{
+        <p><b>Fecha:</b>
+        ${datos.fechaDesaparicion || "No indicada"}</p>
 
-const datos=documento.data();
+        <p><b>Lugar:</b>
+        ${datos.lugarDesaparicion || "No indicado"}</p>
 
-const tarjeta=
-document.createElement("div");
+        <p><b>Estado:</b>
+        ${datos.estado || "pendiente"}</p>
+      `;
 
-tarjeta.className="reporte";
+      contenido.appendChild(tarjeta);
 
-tarjeta.innerHTML=`
+    });
 
-<h3>🚨 ${datos.nombre || "Sin nombre"}</h3>
+  } catch (error) {
 
-<p>
-<b>Edad:</b>
-${datos.edad ?? "No indicada"}
-</p>
+    console.error(error);
 
-<p>
-<b>Sexo:</b>
-${datos.sexo || "No indicado"}
-</p>
+    contenido.innerHTML =
+      "❌ No se pudieron cargar los reportes.";
 
-<p>
-<b>Fecha de desaparición:</b>
-${datos.fechaDesaparicion || "No indicada"}
-</p>
-
-<p>
-<b>Lugar:</b>
-${datos.lugarDesaparicion || "No indicado"}
-</p>
-
-<p>
-<b>Ciudad / Estado:</b>
-${datos.ciudadDesaparicion || "No indicado"}
-</p>
-
-<p>
-<b>Ropa:</b>
-${datos.ropa || "No indicada"}
-</p>
-
-<p>
-<b>Descripción:</b>
-${datos.descripcion || "Sin descripción"}
-</p>
-
-<p>
-<b>Contacto:</b>
-${datos.contacto || "No indicado"}
-</p>
-
-<p class="estado">
-Estado:
-${datos.estado || "pendiente"}
-</p>
-
-`;
-
-contenido.appendChild(tarjeta);
+  }
 
 });
-
-
-}catch(error){
-
-console.error(error);
-
-contenido.innerHTML=
-"❌ No se pudieron cargar los reportes.";
-
-}
-
-});
-
-
-/* VOLVER */
-
-document.getElementById("volverPanel")
-.addEventListener("click",()=>{
-
-listaAlertas.classList.add("oculto");
-panelAdmin.classList.remove("oculto");
-
-});
-
-
-/* BOTONES TEMPORALES */
-
-document.getElementById("usuarios")
-.addEventListener("click",()=>{
-
-document.getElementById("panelMensaje").textContent=
-"👥 El módulo de usuarios será el siguiente.";
-
-});
-
-
-document.getElementById("buscar")
-.addEventListener("click",()=>{
-
-document.getElementById("panelMensaje").textContent=
-"🔎 El buscador será el siguiente.";
-
-});
-
-
-document.getElementById("reportar")
-.addEventListener("click",()=>{
-
-alert("El formulario de reportes se agregará después.");
-
-});
-
-
-document.getElementById("buscarUsuario")
-.addEventListener("click",()=>{
-
-alert("El buscador se agregará después.");
-
-});
-
-
-/* CERRAR SESIÓN */
-
-async function cerrarSesion(){
-
-await signOut(auth);
-
-}
-
-document.getElementById("salir")
-.addEventListener("click",cerrarSesion);
-
-document.getElementById("salirUsuario")
-.addEventListener("click",cerrarSesion);
-
-</script>
-
-</body>
-</html>
