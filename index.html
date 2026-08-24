@@ -8,7 +8,7 @@
 <style>
 body{margin:0;font-family:Arial;background:#f3f3f3;color:#222}
 header{background:#b00020;color:white;text-align:center;padding:22px;font-size:28px;font-weight:bold}
-.contenedor{max-width:500px;margin:auto;padding:20px}
+.contenedor{max-width:550px;margin:auto;padding:20px}
 .card{background:white;padding:22px;margin-bottom:18px;border-radius:15px;box-shadow:0 3px 12px #0002}
 input{width:100%;padding:14px;margin-top:10px;border:1px solid #bbb;border-radius:8px;font-size:16px;box-sizing:border-box}
 button{width:100%;padding:15px;margin-top:12px;border:0;border-radius:9px;font-size:16px;font-weight:bold}
@@ -16,8 +16,11 @@ button{width:100%;padding:15px;margin-top:12px;border:0;border-radius:9px;font-s
 .rojo{background:#b00020;color:white}
 .negro{background:#222;color:white}
 .verde{background:#16803c;color:white}
+.gris{background:#666;color:white}
 .oculto{display:none}
 .mensaje{font-weight:bold;margin-top:15px}
+.reporte{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:15px}
+.estado{font-weight:bold}
 </style>
 </head>
 
@@ -86,6 +89,25 @@ button{width:100%;padding:15px;margin-top:12px;border:0;border-radius:9px;font-s
 
 </section>
 
+
+<section class="card oculto" id="listaAlertas">
+
+<h2>📋 Gestionar alertas</h2>
+
+<p>
+Aquí aparecen los reportes enviados a ALERTA MX.
+</p>
+
+<div id="contenidoAlertas">
+Cargando reportes...
+</div>
+
+<button class="gris" id="volverPanel">
+⬅️ Volver al panel
+</button>
+
+</section>
+
 </div>
 
 
@@ -104,8 +126,10 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
 getFirestore,
-doc,
-getDoc
+collection,
+getDocs,
+query,
+orderBy
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -128,17 +152,23 @@ const db=getFirestore(app);
 const login=document.getElementById("login");
 const panelAdmin=document.getElementById("panelAdmin");
 const panelUsuario=document.getElementById("panelUsuario");
-const mensaje=document.getElementById("mensaje");
+const listaAlertas=document.getElementById("listaAlertas");
 
 
-document.getElementById("entrar").addEventListener("click",async()=>{
+/* INICIAR SESIÓN */
+
+document.getElementById("entrar")
+.addEventListener("click",async()=>{
 
 const email=document.getElementById("email").value.trim();
 const password=document.getElementById("password").value;
+const mensaje=document.getElementById("mensaje");
 
 if(!email||!password){
+
 mensaje.textContent="⚠️ Escribe correo y contraseña.";
 return;
+
 }
 
 mensaje.textContent="🔐 Iniciando sesión...";
@@ -157,6 +187,8 @@ mensaje.textContent="❌ Correo o contraseña incorrectos.";
 });
 
 
+/* DETECTAR USUARIO */
+
 onAuthStateChanged(auth,async(user)=>{
 
 if(!user){
@@ -164,11 +196,17 @@ if(!user){
 login.classList.remove("oculto");
 panelAdmin.classList.add("oculto");
 panelUsuario.classList.add("oculto");
+listaAlertas.classList.add("oculto");
 
 return;
+
 }
 
 try{
+
+const {getFirestore,doc,getDoc}=await import(
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+);
 
 const referencia=doc(db,"usuarios",user.uid);
 const resultado=await getDoc(referencia);
@@ -198,35 +236,143 @@ document.getElementById("usuarioCorreo").textContent=
 console.error(error);
 
 login.classList.remove("oculto");
-mensaje.textContent="❌ No se pudo consultar el perfil.";
+
+document.getElementById("mensaje").textContent=
+"❌ No se pudo consultar el perfil.";
 
 }
 
 });
 
 
-async function cerrarSesion(){
-
-await signOut(auth);
-
-}
-
-
-document.getElementById("salir")
-.addEventListener("click",cerrarSesion);
-
-document.getElementById("salirUsuario")
-.addEventListener("click",cerrarSesion);
-
+/* GESTIONAR ALERTAS */
 
 document.getElementById("alertas")
-.addEventListener("click",()=>{
+.addEventListener("click",async()=>{
 
-document.getElementById("panelMensaje").textContent=
-"🚨 El módulo de alertas será el siguiente.";
+panelAdmin.classList.add("oculto");
+listaAlertas.classList.remove("oculto");
+
+const contenido=
+document.getElementById("contenidoAlertas");
+
+contenido.innerHTML="🔄 Cargando reportes...";
+
+
+try{
+
+const referencia=
+collection(db,"reportes");
+
+const consulta=
+query(referencia,orderBy("creadoEn","desc"));
+
+const resultados=
+await getDocs(consulta);
+
+
+if(resultados.empty){
+
+contenido.innerHTML=
+"<p>📭 No hay reportes registrados todavía.</p>";
+
+return;
+
+}
+
+
+contenido.innerHTML="";
+
+
+resultados.forEach((documento)=>{
+
+const datos=documento.data();
+
+const tarjeta=
+document.createElement("div");
+
+tarjeta.className="reporte";
+
+tarjeta.innerHTML=`
+
+<h3>🚨 ${datos.nombre || "Sin nombre"}</h3>
+
+<p>
+<b>Edad:</b>
+${datos.edad ?? "No indicada"}
+</p>
+
+<p>
+<b>Sexo:</b>
+${datos.sexo || "No indicado"}
+</p>
+
+<p>
+<b>Fecha de desaparición:</b>
+${datos.fechaDesaparicion || "No indicada"}
+</p>
+
+<p>
+<b>Lugar:</b>
+${datos.lugarDesaparicion || "No indicado"}
+</p>
+
+<p>
+<b>Ciudad / Estado:</b>
+${datos.ciudadDesaparicion || "No indicado"}
+</p>
+
+<p>
+<b>Ropa:</b>
+${datos.ropa || "No indicada"}
+</p>
+
+<p>
+<b>Descripción:</b>
+${datos.descripcion || "Sin descripción"}
+</p>
+
+<p>
+<b>Contacto:</b>
+${datos.contacto || "No indicado"}
+</p>
+
+<p class="estado">
+Estado:
+${datos.estado || "pendiente"}
+</p>
+
+`;
+
+contenido.appendChild(tarjeta);
 
 });
 
+
+}catch(error){
+
+console.error(error);
+
+contenido.innerHTML=
+"❌ No se pudieron cargar los reportes.";
+
+}
+
+});
+
+
+/* VOLVER */
+
+document.getElementById("volverPanel")
+.addEventListener("click",()=>{
+
+listaAlertas.classList.add("oculto");
+panelAdmin.classList.remove("oculto");
+
+});
+
+
+/* BOTONES TEMPORALES */
 
 document.getElementById("usuarios")
 .addEventListener("click",()=>{
@@ -241,7 +387,7 @@ document.getElementById("buscar")
 .addEventListener("click",()=>{
 
 document.getElementById("panelMensaje").textContent=
-"🔎 El buscador será el siguiente módulo.";
+"🔎 El buscador será el siguiente.";
 
 });
 
@@ -249,7 +395,7 @@ document.getElementById("panelMensaje").textContent=
 document.getElementById("reportar")
 .addEventListener("click",()=>{
 
-alert("Aquí construiremos el formulario de reporte.");
+alert("El formulario de reportes se agregará después.");
 
 });
 
@@ -257,9 +403,24 @@ alert("Aquí construiremos el formulario de reporte.");
 document.getElementById("buscarUsuario")
 .addEventListener("click",()=>{
 
-alert("Aquí construiremos el buscador.");
+alert("El buscador se agregará después.");
 
 });
+
+
+/* CERRAR SESIÓN */
+
+async function cerrarSesion(){
+
+await signOut(auth);
+
+}
+
+document.getElementById("salir")
+.addEventListener("click",cerrarSesion);
+
+document.getElementById("salirUsuario")
+.addEventListener("click",cerrarSesion);
 
 </script>
 
