@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ALERTA MX - Alertas</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f3f3;
+  color:#222;
+}
+
+header{
+  background:#b00020;
+  color:white;
+  text-align:center;
+  padding:22px;
+  font-size:28px;
+  font-weight:bold;
+}
+
+.contenedor{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  margin-bottom:18px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
+
+.caso{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:16px;
+  margin-top:15px;
+  background:#fff;
+}
+
+.caso h2{
+  color:#b00020;
+  margin-top:0;
+}
+
+.estado{
+  color:#16803c;
+  font-weight:bold;
+}
+
+.cargando{
+  text-align:center;
+  padding:20px;
+}
+
+.vacio{
+  text-align:center;
+  color:#666;
+  padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🚨 ALERTA MX
+</header>
+
+<div class="contenedor">
+
+<div class="card">
+
+<h2>Personas desaparecidas</h2>
+
+<p>
+Consulta las alertas que han sido aprobadas
+para su publicación.
+</p>
+
+</div>
+
+<div id="lista" class="card">
+
+<div class="cargando">
+🔄 Cargando alertas...
+</div>
+
+</div>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+apiKey:
+"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+
+authDomain:
+"alerta-mx-42492.firebaseapp.com",
+
+projectId:
+"alerta-mx-42492",
+
+storageBucket:
+"alerta-mx-42492.firebasestorage.app",
+
+messagingSenderId:
+"17765892560",
+
+appId:
+"1:17765892560:web:29a16191b3155eae2c39d5"
+
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+
+async function cargarAlertas(){
+
+const lista =
+document.getElementById("lista");
+
+try{
+
+const resultados =
+await getDocs(
+collection(db,"casos")
+);
+
+
+lista.innerHTML = "";
+
+
+let cantidad = 0;
+
+
+resultados.forEach((documento)=>{
+
+const caso =
+documento.data();
+
+
+/*
+SOLO MOSTRAR CASOS APROBADOS
+*/
+
+if(caso.estado !== "aprobado"){
+return;
+}
+
+
+cantidad++;
+
+
+const tarjeta =
+document.createElement("div");
+
+tarjeta.className =
+"caso";
+
+
+tarjeta.innerHTML = `
+
+<h2>
+🚨 ${caso.nombre || "Sin nombre"}
+</h2>
+
+<p>
+<b>Edad:</b>
+${caso.edad ?? "No indicada"}
+</p>
+
+<p>
+<b>Sexo:</b>
+${caso.sexo || "No indicado"}
+</p>
+
+<p>
+<b>Fecha de desaparición:</b>
+${caso.fechaDesaparicion || "No indicada"}
+</p>
+
+<p>
+<b>Lugar donde fue vista:</b>
+${caso.lugarDesaparicion || "No indicado"}
+</p>
+
+<p>
+<b>Ciudad / Estado:</b>
+${caso.ciudad || "No indicado"}
+</p>
+
+<p>
+<b>Ropa:</b>
+${caso.ropa || "No indicada"}
+</p>
+
+<p>
+<b>Descripción:</b>
+${caso.descripcion || "Sin descripción"}
+</p>
+
+<p class="estado">
+🟢 ALERTA APROBADA
+</p>
+
+`;
+
+lista.appendChild(tarjeta);
+
+});
+
+
+if(cantidad === 0){
+
+lista.innerHTML = `
+
+<div class="vacio">
+
+📭 Actualmente no hay alertas
+aprobadas para mostrar.
+
+</div>
+
+`;
+
+}
+
+
+}catch(error){
+
+console.error(error);
+
+lista.innerHTML = `
+
+<div class="vacio">
+
+❌ No se pudieron cargar
+las alertas.
+
+</div>
+
+`;
+
+}
+
+}
+
+
+cargarAlertas();
+
+</script>
+
+</body>
+</html>
