@@ -1,384 +1,784 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALERTA MX</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALERTA MX</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-    }
+<style>
+*{box-sizing:border-box}
 
-    header {
-      background: #b00020;
-      color: white;
-      text-align: center;
-      padding: 22px;
-      font-size: 28px;
-      font-weight: bold;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f3f3;
+  color:#222;
+}
 
-    .contenedor {
-      max-width: 500px;
-      margin: 30px auto;
-      padding: 20px;
-    }
+header{
+  background:#b00020;
+  color:white;
+  text-align:center;
+  padding:22px;
+  font-size:28px;
+  font-weight:bold;
+}
 
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 3px 12px #0002;
-    }
+.contenedor{
+  max-width:550px;
+  margin:auto;
+  padding:20px;
+}
 
-    input {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
+.card{
+  background:white;
+  padding:22px;
+  margin-bottom:18px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 12px;
-      border: 0;
-      border-radius: 9px;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+input,textarea,select{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:1px solid #bbb;
+  border-radius:8px;
+  font-size:16px;
+}
 
-    .azul {
-      background: #1769e0;
-    }
+textarea{
+  min-height:100px;
+  resize:vertical;
+}
 
-    .rojo {
-      background: #b00020;
-    }
+button{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  border:0;
+  border-radius:9px;
+  font-size:16px;
+  font-weight:bold;
+  color:white;
+}
 
-    .negro {
-      background: #222;
-    }
+.azul{background:#1769e0}
+.rojo{background:#b00020}
+.negro{background:#222}
+.verde{background:#16803c}
+.gris{background:#666}
 
-    .verde {
-      background: #16803c;
-    }
+.oculto{
+  display:none;
+}
 
-    .gris {
-      background: #666;
-    }
+.mensaje{
+  margin-top:15px;
+  font-weight:bold;
+}
 
-    .oculto {
-      display: none;
-    }
+.caso{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:16px;
+  margin-top:15px;
+  background:#fafafa;
+}
 
-    #resultado,
-    #panelMensaje {
-      margin-top: 18px;
-      font-weight: bold;
-    }
-  </style>
+.caso h3{
+  margin-top:0;
+}
+
+.estado{
+  font-weight:bold;
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#777;
+  font-size:13px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  🚨 ALERTA MX
+🚨 ALERTA MX
 </header>
 
 <div class="contenedor">
 
-  <!-- LOGIN -->
+<!-- LOGIN -->
 
-  <div class="card" id="login">
+<section class="card" id="login">
 
-    <h2>Iniciar sesión</h2>
+<h2>Iniciar sesión</h2>
 
-    <input
-      id="email"
-      type="email"
-      placeholder="Correo electrónico"
-    >
+<input
+id="email"
+type="email"
+placeholder="Correo electrónico">
 
-    <input
-      id="password"
-      type="password"
-      placeholder="Contraseña"
-    >
+<input
+id="password"
+type="password"
+placeholder="Contraseña">
 
-    <button class="azul" id="botonLogin">
-      Entrar
-    </button>
+<button
+class="azul"
+id="botonLogin">
+Entrar
+</button>
 
-    <p id="resultado"></p>
+<p id="resultado" class="mensaje"></p>
 
-  </div>
-
-
-  <!-- PANEL ADMIN -->
-
-  <div class="card oculto" id="panelAdmin">
-
-    <h2>🛡️ Panel de administrador</h2>
-
-    <p id="adminCorreo"></p>
-
-    <button class="rojo" id="gestionarAlertas">
-      🚨 Gestionar alertas
-    </button>
-
-    <button class="azul" id="usuarios">
-      👥 Usuarios
-    </button>
-
-    <button class="negro" id="buscar">
-      🔎 Buscar persona
-    </button>
-
-    <button class="verde" id="cerrarSesion">
-      🚪 Cerrar sesión
-    </button>
-
-    <p id="panelMensaje"></p>
-
-  </div>
+</section>
 
 
-  <!-- PANTALLA DE ALERTAS -->
+<!-- PANEL ADMIN -->
 
-  <div class="card oculto" id="pantallaAlertas">
+<section class="card oculto" id="panelAdmin">
 
-    <h2>🚨 Gestionar alertas</h2>
+<h2>🛡️ Panel de administrador</h2>
 
-    <p>
-      Aquí aparecerán los reportes enviados a ALERTA MX.
-    </p>
+<p id="adminCorreo"></p>
 
-    <p>
-      📭 No hay reportes registrados todavía.
-    </p>
+<button
+class="rojo"
+id="gestionarAlertas">
+🚨 Gestionar alertas
+</button>
 
-    <button class="gris" id="volver">
-      ⬅️ Volver al panel
-    </button>
+<button
+class="azul"
+id="crearCaso">
+📝 Crear caso
+</button>
 
-  </div>
+<button
+class="negro"
+id="buscar">
+🔎 Buscar persona
+</button>
+
+<button
+class="verde"
+id="cerrarSesion">
+🚪 Cerrar sesión
+</button>
+
+<p id="panelMensaje" class="mensaje"></p>
+
+</section>
+
+
+<!-- FORMULARIO -->
+
+<section class="card oculto" id="formulario">
+
+<h2>📝 Crear caso</h2>
+
+<input
+id="nombre"
+type="text"
+placeholder="Nombre completo">
+
+<input
+id="edad"
+type="number"
+placeholder="Edad">
+
+<select id="sexo">
+<option value="">Selecciona sexo</option>
+<option value="Femenino">Femenino</option>
+<option value="Masculino">Masculino</option>
+<option value="No especificado">No especificado</option>
+</select>
+
+<input
+id="fecha"
+type="date">
+
+<input
+id="lugar"
+type="text"
+placeholder="Lugar donde fue vista por última vez">
+
+<input
+id="ciudad"
+type="text"
+placeholder="Ciudad / Estado">
+
+<input
+id="ropa"
+type="text"
+placeholder="Ropa que llevaba">
+
+<textarea
+id="descripcion"
+placeholder="Descripción física y señas particulares"></textarea>
+
+<input
+id="contacto"
+type="text"
+placeholder="Teléfono de contacto">
+
+<button
+class="rojo"
+id="guardarCaso">
+💾 Guardar caso
+</button>
+
+<button
+class="gris"
+id="cancelarCaso">
+Cancelar
+</button>
+
+<p id="mensajeCaso" class="mensaje"></p>
+
+</section>
+
+
+<!-- LISTA DE CASOS -->
+
+<section class="card oculto" id="pantallaAlertas">
+
+<h2>🚨 Gestionar alertas</h2>
+
+<p>
+Casos registrados en ALERTA MX:
+</p>
+
+<div id="listaCasos">
+Cargando...
+</div>
+
+<button
+class="gris"
+id="volverPanel">
+⬅️ Volver al panel
+</button>
+
+</section>
 
 </div>
 
 
+<footer>
+ALERTA MX © 2026
+</footer>
+
+
 <script type="module">
 
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    signOut
-  }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+getAuth,
+signInWithEmailAndPassword,
+signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
 
-    apiKey:
-      "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+/* FIREBASE */
 
-    authDomain:
-      "alerta-mx-42492.firebaseapp.com",
+const firebaseConfig = {
 
-    projectId:
-      "alerta-mx-42492",
+apiKey:
+"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
 
-    storageBucket:
-      "alerta-mx-42492.firebasestorage.app",
+authDomain:
+"alerta-mx-42492.firebaseapp.com",
 
-    messagingSenderId:
-      "17765892560",
+projectId:
+"alerta-mx-42492",
 
-    appId:
-      "1:17765892560:web:29a16191b3155eae2c39d5"
+storageBucket:
+"alerta-mx-42492.firebasestorage.app",
 
-  };
+messagingSenderId:
+"17765892560",
 
+appId:
+"1:17765892560:web:29a16191b3155eae2c39d5"
 
-  const app =
-    initializeApp(firebaseConfig);
+};
 
-  const auth =
-    getAuth(app);
 
+const app =
+initializeApp(firebaseConfig);
 
-  const login =
-    document.getElementById("login");
+const auth =
+getAuth(app);
 
-  const panelAdmin =
-    document.getElementById("panelAdmin");
+const db =
+getFirestore(app);
 
-  const pantallaAlertas =
-    document.getElementById("pantallaAlertas");
 
-  const resultado =
-    document.getElementById("resultado");
+/* ELEMENTOS */
 
+const login =
+document.getElementById("login");
 
-  /* INICIAR SESIÓN */
+const panelAdmin =
+document.getElementById("panelAdmin");
 
-  document
-    .getElementById("botonLogin")
-    .addEventListener("click", async () => {
+const formulario =
+document.getElementById("formulario");
 
-      const email =
-        document.getElementById("email")
-          .value
-          .trim();
+const pantallaAlertas =
+document.getElementById("pantallaAlertas");
 
-      const password =
-        document.getElementById("password")
-          .value;
 
+/* LOGIN */
 
-      if (!email || !password) {
+document
+.getElementById("botonLogin")
+.addEventListener("click",async()=>{
 
-        resultado.innerText =
-          "⚠️ Escribe correo y contraseña.";
+const email =
+document.getElementById("email")
+.value
+.trim();
 
-        return;
-      }
+const password =
+document.getElementById("password")
+.value;
 
+const resultado =
+document.getElementById("resultado");
 
-      resultado.innerText =
-        "🔐 Iniciando sesión...";
 
+if(!email || !password){
 
-      try {
+resultado.textContent =
+"⚠️ Escribe correo y contraseña.";
 
-        const credencial =
-          await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
+return;
+}
 
 
-        /*
+resultado.textContent =
+"🔐 Iniciando sesión...";
 
-        POR AHORA EL ADMINISTRADOR
-        SE IDENTIFICA POR ESTE CORREO.
 
-        */
+try{
 
-        if (
-          credencial.user.email ===
-          "admin@alertamx.app"
-        ) {
+const credencial =
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
 
-          login.classList.add("oculto");
 
-          panelAdmin.classList.remove("oculto");
+/* ADMIN */
 
-          document
-            .getElementById("adminCorreo")
-            .innerText =
-            "Administrador: " +
-            credencial.user.email;
+if(
+credencial.user.email ===
+"admin@alertamx.app"
+){
 
-        } else {
+login.classList.add("oculto");
 
-          resultado.innerText =
-            "✅ Sesión iniciada: " +
-            credencial.user.email;
+panelAdmin.classList.remove("oculto");
 
-        }
+document
+.getElementById("adminCorreo")
+.textContent =
+"Administrador: " +
+credencial.user.email;
 
+}else{
 
-      } catch (error) {
+resultado.textContent =
+"✅ Sesión iniciada: " +
+credencial.user.email;
 
-        console.error(error);
+}
 
-        resultado.innerText =
-          "❌ Error: " +
-          error.code;
 
-      }
+}catch(error){
 
-    });
+console.error(error);
 
+resultado.textContent =
+"❌ Error: " +
+error.code;
 
-  /* GESTIONAR ALERTAS */
+}
 
-  document
-    .getElementById("gestionarAlertas")
-    .addEventListener("click", () => {
+});
 
-      panelAdmin.classList.add("oculto");
 
-      pantallaAlertas.classList.remove("oculto");
+/* CREAR CASO */
 
-    });
+document
+.getElementById("crearCaso")
+.addEventListener("click",()=>{
 
+panelAdmin.classList.add("oculto");
 
-  /* VOLVER */
+formulario.classList.remove("oculto");
 
-  document
-    .getElementById("volver")
-    .addEventListener("click", () => {
+});
 
-      pantallaAlertas.classList.add("oculto");
 
-      panelAdmin.classList.remove("oculto");
+/* CANCELAR */
 
-    });
+document
+.getElementById("cancelarCaso")
+.addEventListener("click",()=>{
 
+formulario.classList.add("oculto");
 
-  /* USUARIOS */
+panelAdmin.classList.remove("oculto");
 
-  document
-    .getElementById("usuarios")
-    .addEventListener("click", () => {
+});
 
-      document
-        .getElementById("panelMensaje")
-        .innerText =
-        "👥 El módulo de usuarios lo construiremos después.";
 
-    });
+/* GUARDAR CASO */
 
+document
+.getElementById("guardarCaso")
+.addEventListener("click",async()=>{
 
-  /* BUSCAR */
+const mensaje =
+document.getElementById("mensajeCaso");
 
-  document
-    .getElementById("buscar")
-    .addEventListener("click", () => {
 
-      document
-        .getElementById("panelMensaje")
-        .innerText =
-        "🔎 El buscador lo construiremos después.";
+const nombre =
+document.getElementById("nombre")
+.value
+.trim();
 
-    });
+const edad =
+document.getElementById("edad")
+.value;
 
+const sexo =
+document.getElementById("sexo")
+.value;
 
-  /* CERRAR SESIÓN */
+const fecha =
+document.getElementById("fecha")
+.value;
 
-  document
-    .getElementById("cerrarSesion")
-    .addEventListener("click", async () => {
+const lugar =
+document.getElementById("lugar")
+.value
+.trim();
 
-      await signOut(auth);
+const ciudad =
+document.getElementById("ciudad")
+.value
+.trim();
 
-      location.reload();
+const ropa =
+document.getElementById("ropa")
+.value
+.trim();
 
-    });
+const descripcion =
+document.getElementById("descripcion")
+.value
+.trim();
+
+const contacto =
+document.getElementById("contacto")
+.value
+.trim();
+
+
+if(!nombre || !fecha || !lugar){
+
+mensaje.textContent =
+"⚠️ Nombre, fecha y lugar son obligatorios.";
+
+return;
+}
+
+
+mensaje.textContent =
+"💾 Guardando caso...";
+
+
+try{
+
+const usuario =
+auth.currentUser;
+
+
+await addDoc(
+collection(db,"casos"),
+{
+
+nombre: nombre,
+
+edad: edad ?
+Number(edad) :
+null,
+
+sexo: sexo,
+
+fechaDesaparicion: fecha,
+
+lugarDesaparicion: lugar,
+
+ciudad: ciudad,
+
+ropa: ropa,
+
+descripcion: descripcion,
+
+contacto: contacto,
+
+estado: "pendiente",
+
+creadoPor:
+usuario ?
+usuario.email :
+"desconocido",
+
+creadoEn:
+serverTimestamp()
+
+}
+
+);
+
+
+mensaje.textContent =
+"✅ Caso guardado correctamente.";
+
+
+/* LIMPIAR */
+
+document
+.getElementById("nombre")
+.value="";
+
+document
+.getElementById("edad")
+.value="";
+
+document
+.getElementById("sexo")
+.value="";
+
+document
+.getElementById("fecha")
+.value="";
+
+document
+.getElementById("lugar")
+.value="";
+
+document
+.getElementById("ciudad")
+.value="";
+
+document
+.getElementById("ropa")
+.value="";
+
+document
+.getElementById("descripcion")
+.value="";
+
+document
+.getElementById("contacto")
+.value="";
+
+
+}catch(error){
+
+console.error(error);
+
+mensaje.textContent =
+"❌ No se pudo guardar el caso: " +
+error.code;
+
+}
+
+});
+
+
+/* GESTIONAR ALERTAS */
+
+document
+.getElementById("gestionarAlertas")
+.addEventListener("click",async()=>{
+
+panelAdmin.classList.add("oculto");
+
+pantallaAlertas.classList.remove("oculto");
+
+
+const lista =
+document.getElementById("listaCasos");
+
+lista.innerHTML =
+"🔄 Cargando casos...";
+
+
+try{
+
+const resultados =
+await getDocs(
+collection(db,"casos")
+);
+
+
+if(resultados.empty){
+
+lista.innerHTML =
+"📭 No hay casos registrados todavía.";
+
+return;
+
+}
+
+
+lista.innerHTML="";
+
+
+resultados.forEach((documento)=>{
+
+const caso =
+documento.data();
+
+
+const tarjeta =
+document.createElement("div");
+
+tarjeta.className="caso";
+
+
+tarjeta.innerHTML = `
+
+<h3>
+🚨 ${caso.nombre || "Sin nombre"}
+</h3>
+
+<p>
+<b>Edad:</b>
+${caso.edad ?? "No indicada"}
+</p>
+
+<p>
+<b>Sexo:</b>
+${caso.sexo || "No indicado"}
+</p>
+
+<p>
+<b>Fecha de desaparición:</b>
+${caso.fechaDesaparicion || "No indicada"}
+</p>
+
+<p>
+<b>Lugar:</b>
+${caso.lugarDesaparicion || "No indicado"}
+</p>
+
+<p>
+<b>Ciudad / Estado:</b>
+${caso.ciudad || "No indicado"}
+</p>
+
+<p>
+<b>Ropa:</b>
+${caso.ropa || "No indicada"}
+</p>
+
+<p>
+<b>Descripción:</b>
+${caso.descripcion || "Sin descripción"}
+</p>
+
+<p>
+<b>Contacto:</b>
+${caso.contacto || "No indicado"}
+</p>
+
+<p class="estado">
+<b>Estado:</b>
+${caso.estado || "pendiente"}
+</p>
+
+`;
+
+lista.appendChild(tarjeta);
+
+});
+
+
+}catch(error){
+
+console.error(error);
+
+lista.innerHTML =
+"❌ No se pudieron cargar los casos: " +
+error.code;
+
+}
+
+});
+
+
+/* VOLVER */
+
+document
+.getElementById("volverPanel")
+.addEventListener("click",()=>{
+
+pantallaAlertas.classList.add("oculto");
+
+panelAdmin.classList.remove("oculto");
+
+});
+
+
+/* BUSCAR */
+
+document
+.getElementById("buscar")
+.addEventListener("click",()=>{
+
+document
+.getElementById("panelMensaje")
+.textContent =
+"🔎 El buscador lo construiremos después.";
+
+});
+
+
+/* CERRAR SESIÓN */
+
+document
+.getElementById("cerrarSesion")
+.addEventListener("click",async()=>{
+
+await signOut(auth);
+
+location.reload();
+
+});
 
 </script>
 
