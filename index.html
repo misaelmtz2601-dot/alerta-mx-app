@@ -54,20 +54,22 @@ textarea{
 
 button{
   width:100%;
-  padding:15px;
-  margin-top:12px;
+  padding:14px;
+  margin-top:10px;
   border:0;
   border-radius:9px;
   font-size:16px;
   font-weight:bold;
   color:white;
+  cursor:pointer;
 }
 
 .azul{background:#1769e0}
 .rojo{background:#b00020}
-.negro{background:#222}
 .verde{background:#16803c}
+.negro{background:#222}
 .gris{background:#666}
+.naranja{background:#d97706}
 
 .oculto{
   display:none;
@@ -86,28 +88,16 @@ button{
   background:#fafafa;
 }
 
-.caso h3{
-  margin-top:0;
-}
-
 .estado{
   font-weight:bold;
 }
 
-footer{
-  text-align:center;
-  padding:25px;
-  color:#777;
-  font-size:13px;
-}
 </style>
 </head>
 
 <body>
 
-<header>
-🚨 ALERTA MX
-</header>
+<header>🚨 ALERTA MX</header>
 
 <div class="contenedor">
 
@@ -117,19 +107,13 @@ footer{
 
 <h2>Iniciar sesión</h2>
 
-<input
-id="email"
-type="email"
+<input id="email" type="email"
 placeholder="Correo electrónico">
 
-<input
-id="password"
-type="password"
+<input id="password" type="password"
 placeholder="Contraseña">
 
-<button
-class="azul"
-id="botonLogin">
+<button class="azul" id="botonLogin">
 Entrar
 </button>
 
@@ -146,27 +130,19 @@ Entrar
 
 <p id="adminCorreo"></p>
 
-<button
-class="rojo"
-id="gestionarAlertas">
+<button class="rojo" id="gestionarAlertas">
 🚨 Gestionar alertas
 </button>
 
-<button
-class="azul"
-id="crearCaso">
+<button class="azul" id="crearCaso">
 📝 Crear caso
 </button>
 
-<button
-class="negro"
-id="buscar">
+<button class="negro" id="buscar">
 🔎 Buscar persona
 </button>
 
-<button
-class="verde"
-id="cerrarSesion">
+<button class="verde" id="cerrarSesion">
 🚪 Cerrar sesión
 </button>
 
@@ -181,13 +157,11 @@ id="cerrarSesion">
 
 <h2>📝 Crear caso</h2>
 
-<input
-id="nombre"
+<input id="nombre"
 type="text"
 placeholder="Nombre completo">
 
-<input
-id="edad"
+<input id="edad"
 type="number"
 placeholder="Edad">
 
@@ -195,46 +169,38 @@ placeholder="Edad">
 <option value="">Selecciona sexo</option>
 <option value="Femenino">Femenino</option>
 <option value="Masculino">Masculino</option>
-<option value="No especificado">No especificado</option>
+<option value="No especificado">
+No especificado
+</option>
 </select>
 
-<input
-id="fecha"
+<input id="fecha"
 type="date">
 
-<input
-id="lugar"
+<input id="lugar"
 type="text"
 placeholder="Lugar donde fue vista por última vez">
 
-<input
-id="ciudad"
+<input id="ciudad"
 type="text"
 placeholder="Ciudad / Estado">
 
-<input
-id="ropa"
+<input id="ropa"
 type="text"
 placeholder="Ropa que llevaba">
 
-<textarea
-id="descripcion"
+<textarea id="descripcion"
 placeholder="Descripción física y señas particulares"></textarea>
 
-<input
-id="contacto"
+<input id="contacto"
 type="text"
 placeholder="Teléfono de contacto">
 
-<button
-class="rojo"
-id="guardarCaso">
+<button class="rojo" id="guardarCaso">
 💾 Guardar caso
 </button>
 
-<button
-class="gris"
-id="cancelarCaso">
+<button class="gris" id="cancelarCaso">
 Cancelar
 </button>
 
@@ -243,23 +209,17 @@ Cancelar
 </section>
 
 
-<!-- LISTA DE CASOS -->
+<!-- ALERTAS -->
 
 <section class="card oculto" id="pantallaAlertas">
 
 <h2>🚨 Gestionar alertas</h2>
 
-<p>
-Casos registrados en ALERTA MX:
-</p>
-
 <div id="listaCasos">
 Cargando...
 </div>
 
-<button
-class="gris"
-id="volverPanel">
+<button class="gris" id="volverPanel">
 ⬅️ Volver al panel
 </button>
 
@@ -267,8 +227,7 @@ id="volverPanel">
 
 </div>
 
-
-<footer>
+<footer style="text-align:center;padding:25px;color:#777">
 ALERTA MX © 2026
 </footer>
 
@@ -290,12 +249,12 @@ getFirestore,
 collection,
 addDoc,
 getDocs,
+updateDoc,
+doc,
 serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
-/* FIREBASE */
 
 const firebaseConfig = {
 
@@ -320,66 +279,47 @@ appId:
 };
 
 
-const app =
-initializeApp(firebaseConfig);
-
-const auth =
-getAuth(app);
-
-const db =
-getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
 
-/* ELEMENTOS */
-
-const login =
-document.getElementById("login");
-
-const panelAdmin =
-document.getElementById("panelAdmin");
-
-const formulario =
-document.getElementById("formulario");
-
-const pantallaAlertas =
-document.getElementById("pantallaAlertas");
+const login=document.getElementById("login");
+const panelAdmin=document.getElementById("panelAdmin");
+const formulario=document.getElementById("formulario");
+const pantallaAlertas=document.getElementById("pantallaAlertas");
 
 
 /* LOGIN */
 
-document
-.getElementById("botonLogin")
+document.getElementById("botonLogin")
 .addEventListener("click",async()=>{
 
-const email =
-document.getElementById("email")
-.value
-.trim();
+const email=
+document.getElementById("email").value.trim();
 
-const password =
-document.getElementById("password")
-.value;
+const password=
+document.getElementById("password").value;
 
-const resultado =
+const resultado=
 document.getElementById("resultado");
 
 
-if(!email || !password){
+if(!email||!password){
 
-resultado.textContent =
+resultado.textContent=
 "⚠️ Escribe correo y contraseña.";
 
 return;
 }
 
-
-resultado.textContent =
+resultado.textContent=
 "🔐 Iniciando sesión...";
 
 
 try{
 
-const credencial =
+const credencial=
 await signInWithEmailAndPassword(
 auth,
 email,
@@ -387,38 +327,33 @@ password
 );
 
 
-/* ADMIN */
-
 if(
-credencial.user.email ===
+credencial.user.email===
 "admin@alertamx.app"
 ){
 
 login.classList.add("oculto");
-
 panelAdmin.classList.remove("oculto");
 
-document
-.getElementById("adminCorreo")
-.textContent =
-"Administrador: " +
+document.getElementById("adminCorreo")
+.textContent=
+"Administrador: "+
 credencial.user.email;
 
 }else{
 
-resultado.textContent =
-"✅ Sesión iniciada: " +
+resultado.textContent=
+"✅ Sesión iniciada: "+
 credencial.user.email;
 
 }
-
 
 }catch(error){
 
 console.error(error);
 
-resultado.textContent =
-"❌ Error: " +
+resultado.textContent=
+"❌ Error: "+
 error.code;
 
 }
@@ -428,12 +363,10 @@ error.code;
 
 /* CREAR CASO */
 
-document
-.getElementById("crearCaso")
+document.getElementById("crearCaso")
 .addEventListener("click",()=>{
 
 panelAdmin.classList.add("oculto");
-
 formulario.classList.remove("oculto");
 
 });
@@ -441,12 +374,10 @@ formulario.classList.remove("oculto");
 
 /* CANCELAR */
 
-document
-.getElementById("cancelarCaso")
+document.getElementById("cancelarCaso")
 .addEventListener("click",()=>{
 
 formulario.classList.add("oculto");
-
 panelAdmin.classList.remove("oculto");
 
 });
@@ -454,164 +385,89 @@ panelAdmin.classList.remove("oculto");
 
 /* GUARDAR CASO */
 
-document
-.getElementById("guardarCaso")
+document.getElementById("guardarCaso")
 .addEventListener("click",async()=>{
 
-const mensaje =
+const mensaje=
 document.getElementById("mensajeCaso");
 
+const nombre=
+document.getElementById("nombre").value.trim();
 
-const nombre =
-document.getElementById("nombre")
-.value
-.trim();
+const edad=
+document.getElementById("edad").value;
 
-const edad =
-document.getElementById("edad")
-.value;
+const sexo=
+document.getElementById("sexo").value;
 
-const sexo =
-document.getElementById("sexo")
-.value;
+const fecha=
+document.getElementById("fecha").value;
 
-const fecha =
-document.getElementById("fecha")
-.value;
+const lugar=
+document.getElementById("lugar").value.trim();
 
-const lugar =
-document.getElementById("lugar")
-.value
-.trim();
+const ciudad=
+document.getElementById("ciudad").value.trim();
 
-const ciudad =
-document.getElementById("ciudad")
-.value
-.trim();
+const ropa=
+document.getElementById("ropa").value.trim();
 
-const ropa =
-document.getElementById("ropa")
-.value
-.trim();
+const descripcion=
+document.getElementById("descripcion").value.trim();
 
-const descripcion =
-document.getElementById("descripcion")
-.value
-.trim();
-
-const contacto =
-document.getElementById("contacto")
-.value
-.trim();
+const contacto=
+document.getElementById("contacto").value.trim();
 
 
-if(!nombre || !fecha || !lugar){
+if(!nombre||!fecha||!lugar){
 
-mensaje.textContent =
+mensaje.textContent=
 "⚠️ Nombre, fecha y lugar son obligatorios.";
 
 return;
 }
 
-
-mensaje.textContent =
+mensaje.textContent=
 "💾 Guardando caso...";
 
 
 try{
 
-const usuario =
-auth.currentUser;
-
+const usuario=auth.currentUser;
 
 await addDoc(
 collection(db,"casos"),
 {
 
-nombre: nombre,
+nombre,
+edad:edad?Number(edad):null,
+sexo,
+fechaDesaparicion:fecha,
+lugarDesaparicion:lugar,
+ciudad,
+ropa,
+descripcion,
+contacto,
 
-edad: edad ?
-Number(edad) :
-null,
-
-sexo: sexo,
-
-fechaDesaparicion: fecha,
-
-lugarDesaparicion: lugar,
-
-ciudad: ciudad,
-
-ropa: ropa,
-
-descripcion: descripcion,
-
-contacto: contacto,
-
-estado: "pendiente",
+estado:"pendiente",
 
 creadoPor:
-usuario ?
-usuario.email :
-"desconocido",
+usuario?usuario.email:"desconocido",
 
-creadoEn:
-serverTimestamp()
+creadoEn:serverTimestamp()
 
 }
-
 );
 
-
-mensaje.textContent =
+mensaje.textContent=
 "✅ Caso guardado correctamente.";
-
-
-/* LIMPIAR */
-
-document
-.getElementById("nombre")
-.value="";
-
-document
-.getElementById("edad")
-.value="";
-
-document
-.getElementById("sexo")
-.value="";
-
-document
-.getElementById("fecha")
-.value="";
-
-document
-.getElementById("lugar")
-.value="";
-
-document
-.getElementById("ciudad")
-.value="";
-
-document
-.getElementById("ropa")
-.value="";
-
-document
-.getElementById("descripcion")
-.value="";
-
-document
-.getElementById("contacto")
-.value="";
-
 
 }catch(error){
 
 console.error(error);
 
-mensaje.textContent =
-"❌ No se pudo guardar el caso: " +
+mensaje.textContent=
+"❌ No se pudo guardar: "+
 error.code;
 
 }
@@ -621,37 +477,34 @@ error.code;
 
 /* GESTIONAR ALERTAS */
 
-document
-.getElementById("gestionarAlertas")
-.addEventListener("click",async()=>{
+document.getElementById("gestionarAlertas")
+.addEventListener("click",cargarCasos);
+
+
+async function cargarCasos(){
 
 panelAdmin.classList.add("oculto");
-
 pantallaAlertas.classList.remove("oculto");
 
-
-const lista =
+const lista=
 document.getElementById("listaCasos");
 
-lista.innerHTML =
+lista.innerHTML=
 "🔄 Cargando casos...";
 
 
 try{
 
-const resultados =
-await getDocs(
-collection(db,"casos")
-);
+const resultados=
+await getDocs(collection(db,"casos"));
 
 
 if(resultados.empty){
 
-lista.innerHTML =
-"📭 No hay casos registrados todavía.";
+lista.innerHTML=
+"📭 No hay casos registrados.";
 
 return;
-
 }
 
 
@@ -660,95 +513,145 @@ lista.innerHTML="";
 
 resultados.forEach((documento)=>{
 
-const caso =
-documento.data();
+const caso=documento.data();
 
-
-const tarjeta =
+const tarjeta=
 document.createElement("div");
 
 tarjeta.className="caso";
 
 
-tarjeta.innerHTML = `
+const titulo=
+document.createElement("h3");
 
-<h3>
-🚨 ${caso.nombre || "Sin nombre"}
-</h3>
+titulo.textContent=
+"🚨 "+(caso.nombre||"Sin nombre");
 
-<p>
-<b>Edad:</b>
-${caso.edad ?? "No indicada"}
-</p>
+tarjeta.appendChild(titulo);
 
-<p>
-<b>Sexo:</b>
-${caso.sexo || "No indicado"}
-</p>
 
-<p>
-<b>Fecha de desaparición:</b>
-${caso.fechaDesaparicion || "No indicada"}
-</p>
+const datos=document.createElement("div");
 
-<p>
-<b>Lugar:</b>
-${caso.lugarDesaparicion || "No indicado"}
-</p>
+datos.innerHTML=`
 
-<p>
-<b>Ciudad / Estado:</b>
-${caso.ciudad || "No indicado"}
-</p>
+<p><b>Edad:</b>
+${caso.edad??"No indicada"}</p>
 
-<p>
-<b>Ropa:</b>
-${caso.ropa || "No indicada"}
-</p>
+<p><b>Sexo:</b>
+${caso.sexo||"No indicado"}</p>
 
-<p>
-<b>Descripción:</b>
-${caso.descripcion || "Sin descripción"}
-</p>
+<p><b>Fecha:</b>
+${caso.fechaDesaparicion||"No indicada"}</p>
 
-<p>
-<b>Contacto:</b>
-${caso.contacto || "No indicado"}
-</p>
+<p><b>Lugar:</b>
+${caso.lugarDesaparicion||"No indicado"}</p>
 
-<p class="estado">
-<b>Estado:</b>
-${caso.estado || "pendiente"}
+<p><b>Ciudad:</b>
+${caso.ciudad||"No indicada"}</p>
+
+<p><b>Estado:</b>
+<span id="estado-${documento.id}">
+${caso.estado||"pendiente"}
+</span>
 </p>
 
 `;
 
+tarjeta.appendChild(datos);
+
+
+/* BOTONES */
+
+if(caso.estado==="pendiente"||!caso.estado){
+
+const aprobar=
+document.createElement("button");
+
+aprobar.className="verde";
+aprobar.textContent="✅ Aprobar";
+
+aprobar.onclick=()=>{
+cambiarEstado(
+documento.id,
+"aprobado"
+);
+};
+
+tarjeta.appendChild(aprobar);
+
+
+const rechazar=
+document.createElement("button");
+
+rechazar.className="rojo";
+rechazar.textContent="❌ Rechazar";
+
+rechazar.onclick=()=>{
+cambiarEstado(
+documento.id,
+"rechazado"
+);
+};
+
+tarjeta.appendChild(rechazar);
+
+}
+
+
 lista.appendChild(tarjeta);
 
 });
+
+}catch(error){
+
+console.error(error);
+
+lista.innerHTML=
+"❌ Error al cargar casos: "+
+error.code;
+
+}
+
+}
+
+
+/* CAMBIAR ESTADO */
+
+async function cambiarEstado(id,nuevoEstado){
+
+try{
+
+await updateDoc(
+doc(db,"casos",id),
+{
+estado:nuevoEstado
+}
+);
+
+
+await cargarCasos();
 
 
 }catch(error){
 
 console.error(error);
 
-lista.innerHTML =
-"❌ No se pudieron cargar los casos: " +
-error.code;
+alert(
+"No se pudo actualizar el caso: "+
+error.code
+);
 
 }
 
-});
+}
 
 
 /* VOLVER */
 
-document
-.getElementById("volverPanel")
+document.getElementById("volverPanel")
 .addEventListener("click",()=>{
 
 pantallaAlertas.classList.add("oculto");
-
 panelAdmin.classList.remove("oculto");
 
 });
@@ -756,22 +659,19 @@ panelAdmin.classList.remove("oculto");
 
 /* BUSCAR */
 
-document
-.getElementById("buscar")
+document.getElementById("buscar")
 .addEventListener("click",()=>{
 
-document
-.getElementById("panelMensaje")
-.textContent =
-"🔎 El buscador lo construiremos después.";
+document.getElementById("panelMensaje")
+.textContent=
+"🔎 El buscador se construirá después.";
 
 });
 
 
 /* CERRAR SESIÓN */
 
-document
-.getElementById("cerrarSesion")
+document.getElementById("cerrarSesion")
 .addEventListener("click",async()=>{
 
 await signOut(auth);
