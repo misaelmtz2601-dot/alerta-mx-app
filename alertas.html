@@ -1,470 +1,514 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>ALERTA MX - Alertas</title>
+<title>ALERTA MX - Alertas</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      color: #222;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f3f3;
+  color:#222;
+}
 
-    header {
-      background: #b00020;
-      color: white;
-      text-align: center;
-      padding: 22px 15px;
-      font-size: 28px;
-      font-weight: bold;
-    }
+header{
+  background:#b00020;
+  color:white;
+  text-align:center;
+  padding:22px 15px;
+  font-size:28px;
+  font-weight:bold;
+}
 
-    .contenedor {
-      width: 100%;
-      max-width: 650px;
-      margin: auto;
-      padding: 20px;
-    }
+.contenedor{
+  width:100%;
+  max-width:650px;
+  margin:auto;
+  padding:20px;
+}
 
-    .encabezado {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.12);
-      margin-bottom: 20px;
-    }
+.encabezado{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+  margin-bottom:20px;
+}
 
-    .encabezado h1 {
-      margin-top: 0;
-      color: #b00020;
-    }
+.encabezado h1{
+  margin-top:0;
+  color:#b00020;
+}
 
-    .caso {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.12);
-      border-left: 6px solid #b00020;
-    }
+.busqueda{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
 
-    .caso h2 {
-      margin-top: 0;
-      color: #b00020;
-    }
+.busqueda input{
+  flex:1;
+  min-width:0;
+  padding:14px;
+  border:1px solid #bbb;
+  border-radius:9px;
+  font-size:16px;
+}
 
-    .dato {
-      margin: 10px 0;
-      line-height: 1.5;
-    }
+.busqueda button{
+  padding:14px 18px;
+  border:0;
+  border-radius:9px;
+  background:#b00020;
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+}
 
-    .estado {
-      display: inline-block;
-      background: #16803c;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-weight: bold;
-      margin-top: 8px;
-    }
+.limpiar{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:0;
+  border-radius:9px;
+  background:#666;
+  color:white;
+  font-weight:bold;
+}
 
-    .cargando,
-    .vacio,
-    .error {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,.12);
-    }
+.caso{
+  background:white;
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+  border-left:6px solid #b00020;
+}
 
-    .error {
-      color: #b00020;
-    }
+.caso h2{
+  margin-top:0;
+  color:#b00020;
+}
 
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #777;
-      font-size: 13px;
-    }
-  </style>
+.dato{
+  margin:10px 0;
+  line-height:1.5;
+}
+
+.estado{
+  display:inline-block;
+  background:#16803c;
+  color:white;
+  padding:8px 12px;
+  border-radius:20px;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+.cargando,
+.vacio,
+.error{
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  text-align:center;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
+
+.error{
+  color:#b00020;
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#777;
+  font-size:13px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  🚨 ALERTA MX
+🚨 ALERTA MX
 </header>
-
 
 <div class="contenedor">
 
-  <div class="encabezado">
+<div class="encabezado">
 
-    <h1>Personas desaparecidas</h1>
+<h1>Personas desaparecidas</h1>
 
-    <p>
-      Consulta las alertas que han sido
-      revisadas y aprobadas por ALERTA MX.
-    </p>
+<p>
+Consulta las alertas aprobadas de ALERTA MX.
+</p>
 
-  </div>
+<div class="busqueda">
 
+<input
+id="buscador"
+type="search"
+placeholder="🔎 Escribe el nombre..."
+autocomplete="off">
 
-  <div id="lista">
+<button id="btnBuscar">
+Buscar
+</button>
 
-    <div class="cargando">
-      🔄 Cargando alertas...
-    </div>
+</div>
 
-  </div>
+<button
+class="limpiar"
+id="btnLimpiar">
+Mostrar todas las alertas
+</button>
 
 </div>
 
 
+<div id="lista">
+
+<div class="cargando">
+🔄 Cargando alertas...
+</div>
+
+</div>
+
+</div>
+
 <footer>
-  ALERTA MX © 2026
+ALERTA MX © 2026
 </footer>
 
 
 <script type="module">
 
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+import {
+getFirestore,
+collection,
+getDocs,
+query,
+where
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  import {
-    getFirestore,
-    collection,
-    getDocs,
-    query,
-    where
-  }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const firebaseConfig = {
 
-  /* FIREBASE */
+apiKey:
+"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
 
-  const firebaseConfig = {
+authDomain:
+"alerta-mx-42492.firebaseapp.com",
 
-    apiKey:
-      "AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+projectId:
+"alerta-mx-42492",
 
-    authDomain:
-      "alerta-mx-42492.firebaseapp.com",
+storageBucket:
+"alerta-mx-42492.firebasestorage.app",
 
-    projectId:
-      "alerta-mx-42492",
+messagingSenderId:
+"17765892560",
 
-    storageBucket:
-      "alerta-mx-42492.firebasestorage.app",
+appId:
+"1:17765892560:web:29a16191b3155eae2c39d5"
 
-    messagingSenderId:
-      "17765892560",
+};
 
-    appId:
-      "1:17765892560:web:29a16191b3155eae2c39d5"
 
-  };
+const app =
+initializeApp(firebaseConfig);
 
+const db =
+getFirestore(app);
 
-  const app =
-    initializeApp(firebaseConfig);
 
+const lista =
+document.getElementById("lista");
 
-  const db =
-    getFirestore(app);
+const buscador =
+document.getElementById("buscador");
 
 
-  const lista =
-    document.getElementById("lista");
+let casosAprobados = [];
 
 
-  /* CARGAR SOLO CASOS APROBADOS */
+/* CARGAR CASOS APROBADOS */
 
-  async function cargarAlertas() {
+async function cargarAlertas(){
 
-    lista.innerHTML = `
-      <div class="cargando">
-        🔄 Cargando alertas...
-      </div>
-    `;
+lista.innerHTML = `
+<div class="cargando">
+🔄 Cargando alertas...
+</div>
+`;
 
+try{
 
-    try {
+const consulta = query(
+collection(db,"casos"),
+where("estado","==","aprobado")
+);
 
-      const consulta = query(
+const resultados =
+await getDocs(consulta);
 
-        collection(db, "casos"),
 
-        where(
-          "estado",
-          "==",
-          "aprobado"
-        )
+casosAprobados = [];
 
-      );
 
+resultados.forEach((documento)=>{
 
-      const resultados =
-        await getDocs(consulta);
+casosAprobados.push({
+id:documento.id,
+...documento.data()
+});
 
+});
 
-      /* NO HAY ALERTAS */
 
-      if (resultados.empty) {
+mostrarCasos(casosAprobados);
 
-        lista.innerHTML = `
-          <div class="vacio">
 
-            <h2>📭 No hay alertas</h2>
+}catch(error){
 
-            <p>
-              Actualmente no hay personas
-              desaparecidas con una alerta aprobada.
-            </p>
+console.error(error);
 
-          </div>
-        `;
+lista.innerHTML = `
+<div class="error">
 
-        return;
-      }
+<h2>❌ No se pudieron cargar las alertas</h2>
 
+<p>
+Código: ${error.code || "desconocido"}
+</p>
 
-      lista.innerHTML = "";
+</div>
+`;
 
+}
 
-      /* MOSTRAR CASOS */
+}
 
-      resultados.forEach((documento) => {
 
-        const caso =
-          documento.data();
+/* MOSTRAR CASOS */
 
+function mostrarCasos(casos){
 
-        const tarjeta =
-          document.createElement("div");
+lista.innerHTML="";
 
 
-        tarjeta.className =
-          "caso";
+if(casos.length===0){
 
+lista.innerHTML=`
 
-        /* TÍTULO */
+<div class="vacio">
 
-        const titulo =
-          document.createElement("h2");
+<h2>📭 No se encontraron alertas</h2>
 
-        titulo.textContent =
-          "🚨 " +
-          (caso.nombre || "Sin nombre");
+<p>
+No hay casos aprobados que coincidan
+con tu búsqueda.
+</p>
 
+</div>
 
-        tarjeta.appendChild(titulo);
+`;
 
+return;
 
-        /* EDAD */
+}
 
-        const edad =
-          document.createElement("p");
 
-        edad.className =
-          "dato";
+casos.forEach((caso)=>{
 
-        edad.innerHTML =
-          "<strong>Edad:</strong> " +
-          (caso.edad ?? "No indicada");
+const tarjeta =
+document.createElement("div");
 
+tarjeta.className="caso";
 
-        tarjeta.appendChild(edad);
 
+tarjeta.innerHTML=`
 
-        /* SEXO */
+<h2>
+🚨 ${escapar(caso.nombre || "Sin nombre")}
+</h2>
 
-        const sexo =
-          document.createElement("p");
+<p class="dato">
+<strong>Edad:</strong>
+${escapar(caso.edad ?? "No indicada")}
+</p>
 
-        sexo.className =
-          "dato";
+<p class="dato">
+<strong>Sexo:</strong>
+${escapar(caso.sexo || "No indicado")}
+</p>
 
-        sexo.innerHTML =
-          "<strong>Sexo:</strong> " +
-          (caso.sexo || "No indicado");
+<p class="dato">
+<strong>Fecha de desaparición:</strong>
+${escapar(caso.fechaDesaparicion || "No indicada")}
+</p>
 
+<p class="dato">
+<strong>Último lugar donde fue vista:</strong>
+${escapar(caso.lugarDesaparicion || "No indicado")}
+</p>
 
-        tarjeta.appendChild(sexo);
+<p class="dato">
+<strong>Ciudad / Estado:</strong>
+${escapar(caso.ciudad || "No indicado")}
+</p>
 
+<p class="dato">
+<strong>Ropa que llevaba:</strong>
+${escapar(caso.ropa || "No indicada")}
+</p>
 
-        /* FECHA */
+<p class="dato">
+<strong>Descripción:</strong>
+${escapar(caso.descripcion || "Sin descripción")}
+</p>
 
-        const fecha =
-          document.createElement("p");
+${
+caso.contacto
+?
+`
+<p class="dato">
+<strong>Contacto:</strong>
+${escapar(caso.contacto)}
+</p>
+`
+:
+""
+}
 
-        fecha.className =
-          "dato";
+<div class="estado">
+🟢 ALERTA APROBADA
+</div>
 
-        fecha.innerHTML =
-          "<strong>Fecha de desaparición:</strong> " +
-          (caso.fechaDesaparicion ||
-           "No indicada");
+`;
 
+lista.appendChild(tarjeta);
 
-        tarjeta.appendChild(fecha);
+});
 
+}
 
-        /* LUGAR */
 
-        const lugar =
-          document.createElement("p");
+/* BUSCAR */
 
-        lugar.className =
-          "dato";
+function buscar(){
 
-        lugar.innerHTML =
-          "<strong>Último lugar donde fue vista:</strong> " +
-          (caso.lugarDesaparicion ||
-           "No indicado");
+const texto =
+buscador.value
+.trim()
+.toLowerCase();
 
 
-        tarjeta.appendChild(lugar);
+if(!texto){
 
+mostrarCasos(casosAprobados);
 
-        /* CIUDAD */
+return;
 
-        const ciudad =
-          document.createElement("p");
+}
 
-        ciudad.className =
-          "dato";
 
-        ciudad.innerHTML =
-          "<strong>Ciudad / Estado:</strong> " +
-          (caso.ciudad ||
-           "No indicado");
+const resultados =
+casosAprobados.filter((caso)=>{
 
+const nombre =
+(caso.nombre || "")
+.toString()
+.toLowerCase();
 
-        tarjeta.appendChild(ciudad);
+return nombre.includes(texto);
 
+});
 
-        /* ROPA */
 
-        const ropa =
-          document.createElement("p");
+mostrarCasos(resultados);
 
-        ropa.className =
-          "dato";
+}
 
-        ropa.innerHTML =
-          "<strong>Ropa que llevaba:</strong> " +
-          (caso.ropa ||
-           "No indicada");
 
+/* BOTÓN BUSCAR */
 
-        tarjeta.appendChild(ropa);
+document
+.getElementById("btnBuscar")
+.addEventListener(
+"click",
+buscar
+);
 
 
-        /* DESCRIPCIÓN */
+/* BUSCAR AL ESCRIBIR */
 
-        const descripcion =
-          document.createElement("p");
+buscador.addEventListener(
+"input",
+buscar
+);
 
-        descripcion.className =
-          "dato";
 
-        descripcion.innerHTML =
-          "<strong>Descripción:</strong> " +
-          (caso.descripcion ||
-           "Sin descripción");
+/* ENTER */
 
+buscador.addEventListener(
+"keydown",
+(event)=>{
 
-        tarjeta.appendChild(descripcion);
+if(event.key==="Enter"){
 
+buscar();
 
-        /* CONTACTO */
+}
 
-        if (caso.contacto) {
+});
 
-          const contacto =
-            document.createElement("p");
 
-          contacto.className =
-            "dato";
+/* LIMPIAR */
 
-          contacto.innerHTML =
-            "<strong>Contacto:</strong> " +
-            caso.contacto;
+document
+.getElementById("btnLimpiar")
+.addEventListener(
+"click",
+()=>{
 
-          tarjeta.appendChild(contacto);
+buscador.value="";
 
-        }
+mostrarCasos(casosAprobados);
 
+}
+);
 
-        /* ESTADO */
 
-        const estado =
-          document.createElement("div");
+/* PROTEGER TEXTO MOSTRADO */
 
-        estado.className =
-          "estado";
+function escapar(valor){
 
-        estado.textContent =
-          "🟢 ALERTA APROBADA";
+return String(valor)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
+}
 
-        tarjeta.appendChild(estado);
 
+/* INICIAR */
 
-        /* AGREGAR A LA PÁGINA */
-
-        lista.appendChild(tarjeta);
-
-      });
-
-
-    } catch (error) {
-
-      console.error(
-        "Error de Firestore:",
-        error
-      );
-
-
-      lista.innerHTML = `
-        <div class="error">
-
-          <h2>
-            ❌ No se pudieron cargar las alertas
-          </h2>
-
-          <p>
-            No fue posible consultar
-            la base de datos.
-          </p>
-
-          <p>
-            Código: ${error.code || "desconocido"}
-          </p>
-
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  /* INICIAR */
-
-  cargarAlertas();
+cargarAlertas();
 
 </script>
 
