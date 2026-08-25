@@ -66,7 +66,6 @@ header{
   background:#b00020;
   color:white;
   font-weight:bold;
-  font-size:16px;
 }
 
 .limpiar{
@@ -109,17 +108,35 @@ header{
   margin-top:8px;
 }
 
-.mapa{
-  display:block;
-  width:100%;
+.acciones{
+  display:grid;
+  gap:10px;
   margin-top:15px;
+}
+
+.acciones a,
+.acciones button{
+  width:100%;
   padding:14px;
-  background:#1769e0;
-  color:white;
+  border:0;
+  border-radius:9px;
   text-align:center;
   text-decoration:none;
-  border-radius:9px;
+  color:white;
   font-weight:bold;
+  font-size:15px;
+}
+
+.mapa{
+  background:#1769e0;
+}
+
+.whatsapp{
+  background:#16803c;
+}
+
+.compartir{
+  background:#222;
 }
 
 .cargando,
@@ -183,13 +200,10 @@ Mostrar todas las alertas
 
 </div>
 
-
 <div id="lista">
-
 <div class="cargando">
 🔄 Cargando alertas...
 </div>
-
 </div>
 
 </div>
@@ -243,18 +257,16 @@ initializeApp(firebaseConfig);
 const db =
 getFirestore(app);
 
-
 const lista =
 document.getElementById("lista");
 
 const buscador =
 document.getElementById("buscador");
 
-
 let casosAprobados = [];
 
 
-/* CARGAR CASOS */
+/* CARGAR SOLO APROBADOS */
 
 async function cargarAlertas(){
 
@@ -274,9 +286,7 @@ where("estado","==","aprobado")
 const resultados =
 await getDocs(consulta);
 
-
 casosAprobados = [];
-
 
 resultados.forEach((documento)=>{
 
@@ -287,9 +297,7 @@ id:documento.id,
 
 });
 
-
 mostrarCasos(casosAprobados);
-
 
 }catch(error){
 
@@ -318,7 +326,6 @@ function mostrarCasos(casos){
 
 lista.innerHTML="";
 
-
 if(casos.length===0){
 
 lista.innerHTML=`
@@ -333,11 +340,9 @@ con tu búsqueda.
 </p>
 
 </div>
-
 `;
 
 return;
-
 }
 
 
@@ -349,10 +354,75 @@ document.createElement("div");
 tarjeta.className="caso";
 
 
-tarjeta.innerHTML=`
+const nombre =
+caso.nombre || "Sin nombre";
+
+const urlActual =
+window.location.href;
+
+const textoCompartir =
+`🚨 ALERTA MX
+
+Persona desaparecida: ${nombre}
+
+Edad: ${caso.edad || "No indicada"}
+
+Fecha de desaparición:
+${caso.fechaDesaparicion || "No indicada"}
+
+Último lugar:
+${caso.lugarDesaparicion || "No indicado"}
+
+Ciudad / Estado:
+${caso.ciudad || "No indicado"}
+
+Consulta la alerta:
+${urlActual}`;
+
+
+let mapaHTML = "";
+
+if(caso.coordenadas){
+
+const mapaURL =
+"https://www.google.com/maps/search/?api=1&query="
++
+encodeURIComponent(caso.coordenadas);
+
+mapaHTML = `
+
+<a
+class="mapa"
+href="${mapaURL}"
+target="_blank"
+rel="noopener noreferrer">
+
+🗺️ Ver ubicación en mapa
+
+</a>
+
+`;
+
+}else{
+
+mapaHTML = `
+
+<div class="dato">
+
+<strong>📍 Ubicación:</strong>
+No disponible
+
+</div>
+
+`;
+
+}
+
+
+tarjeta.innerHTML = `
 
 <h2>
-🚨 ${escapar(caso.nombre || "Sin nombre")}
+🚨 ${escapar(nombre)}
 </h2>
 
 <p class="dato">
@@ -366,12 +436,12 @@ ${escapar(caso.sexo || "No indicado")}
 </p>
 
 <p class="dato">
-<strong>Fecha de desaparición:</strong>
+<strong>📅 Fecha de desaparición:</strong>
 ${escapar(caso.fechaDesaparicion || "No indicada")}
 </p>
 
 <p class="dato">
-<strong>Último lugar donde fue vista:</strong>
+<strong>📍 Último lugar donde fue vista:</strong>
 ${escapar(caso.lugarDesaparicion || "No indicado")}
 </p>
 
@@ -381,47 +451,23 @@ ${escapar(caso.ciudad || "No indicado")}
 </p>
 
 <p class="dato">
-<strong>Ropa que llevaba:</strong>
+<strong>👕 Ropa que llevaba:</strong>
 ${escapar(caso.ropa || "No indicada")}
 </p>
 
 <p class="dato">
-<strong>Descripción:</strong>
+<strong>📝 Descripción:</strong>
 ${escapar(caso.descripcion || "Sin descripción")}
 </p>
 
-${
-caso.coordenadas
-?
-`
-<p class="dato">
-<strong>📍 Última ubicación conocida:</strong><br>
-${escapar(caso.coordenadas)}
-</p>
-
-<a
-class="mapa"
-href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(caso.coordenadas)}"
-target="_blank"
-rel="noopener noreferrer">
-🗺️ Ver ubicación en mapa
-</a>
-`
-:
-`
-<p class="dato">
-<strong>📍 Ubicación:</strong>
-No disponible
-</p>
-`
-}
+${mapaHTML}
 
 ${
 caso.contacto
 ?
 `
 <p class="dato">
-<strong>Contacto:</strong>
+<strong>📞 Contacto:</strong>
 ${escapar(caso.contacto)}
 </p>
 `
@@ -433,7 +479,94 @@ ${escapar(caso.contacto)}
 🟢 ALERTA APROBADA
 </div>
 
+<div class="acciones">
+
+<button
+class="whatsapp"
+data-texto="${escapar(textoCompartir)}">
+
+📲 Compartir por WhatsApp
+
+</button>
+
+<button
+class="compartir"
+data-texto="${escapar(textoCompartir)}">
+
+🔗 Compartir alerta
+
+</button>
+
+</div>
 `;
+
+
+const botonWhatsApp =
+tarjeta.querySelector(".whatsapp");
+
+botonWhatsApp.addEventListener(
+"click",
+()=>{
+
+const mensaje =
+encodeURIComponent(
+textoCompartir
+);
+
+window.open(
+"https://wa.me/?text="+mensaje,
+"_blank"
+);
+
+});
+
+
+const botonCompartir =
+tarjeta.querySelector(".compartir");
+
+botonCompartir.addEventListener(
+"click",
+async()=>{
+
+try{
+
+if(navigator.share){
+
+await navigator.share({
+
+title:
+"ALERTA MX - "+nombre,
+
+text:
+textoCompartir,
+
+url:
+urlActual
+
+});
+
+}else{
+
+await navigator.clipboard.writeText(
+textoCompartir
+);
+
+alert(
+"✅ Información copiada. Ya puedes pegarla donde quieras."
+);
+
+}
+
+}catch(error){
+
+console.log(
+"Compartir cancelado"
+);
+
+}
+
+});
+
 
 lista.appendChild(tarjeta);
 
@@ -442,7 +575,7 @@ lista.appendChild(tarjeta);
 }
 
 
-/* BUSCAR */
+/* BUSCADOR */
 
 function buscar(){
 
@@ -482,8 +615,6 @@ mostrarCasos(resultados);
 }
 
 
-/* BOTÓN BUSCAR */
-
 document
 .getElementById("btnBuscar")
 .addEventListener(
@@ -492,15 +623,11 @@ buscar
 );
 
 
-/* BUSCAR AL ESCRIBIR */
-
 buscador.addEventListener(
 "input",
 buscar
 );
 
-
-/* ENTER */
 
 buscador.addEventListener(
 "keydown",
@@ -513,8 +640,6 @@ buscar();
 });
 
 
-/* LIMPIAR */
-
 document
 .getElementById("btnLimpiar")
 .addEventListener(
@@ -525,8 +650,7 @@ buscador.value="";
 
 mostrarCasos(casosAprobados);
 
-}
-);
+});
 
 
 /* SEGURIDAD DEL TEXTO */
