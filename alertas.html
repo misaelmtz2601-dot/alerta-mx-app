@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>ALERTA MX - Alertas</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -110,6 +107,19 @@ header{
   border-radius:20px;
   font-weight:bold;
   margin-top:8px;
+}
+
+.mapa{
+  display:block;
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  background:#1769e0;
+  color:white;
+  text-align:center;
+  text-decoration:none;
+  border-radius:9px;
+  font-weight:bold;
 }
 
 .cargando,
@@ -244,7 +254,7 @@ document.getElementById("buscador");
 let casosAprobados = [];
 
 
-/* CARGAR CASOS APROBADOS */
+/* CARGAR CASOS */
 
 async function cargarAlertas(){
 
@@ -381,6 +391,32 @@ ${escapar(caso.descripcion || "Sin descripción")}
 </p>
 
 ${
+caso.coordenadas
+?
+`
+<p class="dato">
+<strong>📍 Última ubicación conocida:</strong><br>
+${escapar(caso.coordenadas)}
+</p>
+
+<a
+class="mapa"
+href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(caso.coordenadas)}"
+target="_blank"
+rel="noopener noreferrer">
+🗺️ Ver ubicación en mapa
+</a>
+`
+:
+`
+<p class="dato">
+<strong>📍 Ubicación:</strong>
+No disponible
+</p>
+`
+}
+
+${
 caso.contacto
 ?
 `
@@ -413,7 +449,9 @@ function buscar(){
 const texto =
 buscador.value
 .trim()
-.toLowerCase();
+.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g,"");
 
 
 if(!texto){
@@ -429,9 +467,10 @@ const resultados =
 casosAprobados.filter((caso)=>{
 
 const nombre =
-(caso.nombre || "")
-.toString()
-.toLowerCase();
+String(caso.nombre || "")
+.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g,"");
 
 return nombre.includes(texto);
 
@@ -468,9 +507,7 @@ buscador.addEventListener(
 (event)=>{
 
 if(event.key==="Enter"){
-
 buscar();
-
 }
 
 });
@@ -492,7 +529,7 @@ mostrarCasos(casosAprobados);
 );
 
 
-/* PROTEGER TEXTO MOSTRADO */
+/* SEGURIDAD DEL TEXTO */
 
 function escapar(valor){
 
