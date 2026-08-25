@@ -69,7 +69,6 @@ button{
 .verde{background:#16803c}
 .negro{background:#222}
 .gris{background:#666}
-.naranja{background:#d97706}
 
 .oculto{
   display:none;
@@ -91,15 +90,17 @@ button{
 .estado{
   font-weight:bold;
 }
-
 </style>
 </head>
 
 <body>
 
-<header>🚨 ALERTA MX</header>
+<header>
+🚨 ALERTA MX
+</header>
 
 <div class="contenedor">
+
 
 <!-- LOGIN -->
 
@@ -107,111 +108,182 @@ button{
 
 <h2>Iniciar sesión</h2>
 
-<input id="email" type="email"
+<input
+id="email"
+type="email"
 placeholder="Correo electrónico">
 
-<input id="password" type="password"
+<input
+id="password"
+type="password"
 placeholder="Contraseña">
 
-<button class="azul" id="botonLogin">
+<button
+class="azul"
+id="botonLogin">
 Entrar
 </button>
 
-<p id="resultado" class="mensaje"></p>
+<p
+id="resultado"
+class="mensaje">
+</p>
 
 </section>
 
 
 <!-- PANEL ADMIN -->
 
-<section class="card oculto" id="panelAdmin">
+<section
+class="card oculto"
+id="panelAdmin">
 
 <h2>🛡️ Panel de administrador</h2>
 
 <p id="adminCorreo"></p>
 
-<button class="rojo" id="gestionarAlertas">
+<button
+class="rojo"
+id="gestionarAlertas">
 🚨 Gestionar alertas
 </button>
 
-<button class="azul" id="crearCaso">
+<button
+class="azul"
+id="crearCaso">
 📝 Crear caso
 </button>
 
-<button class="negro" id="buscar">
+<button
+class="negro"
+id="buscar">
 🔎 Buscar persona
 </button>
 
-<button class="verde" id="cerrarSesion">
+<button
+class="verde"
+id="cerrarSesion">
 🚪 Cerrar sesión
 </button>
 
-<p id="panelMensaje" class="mensaje"></p>
+<p
+id="panelMensaje"
+class="mensaje">
+</p>
 
 </section>
 
 
 <!-- FORMULARIO -->
 
-<section class="card oculto" id="formulario">
+<section
+class="card oculto"
+id="formulario">
 
 <h2>📝 Crear caso</h2>
 
-<input id="nombre"
+
+<input
+id="nombre"
 type="text"
 placeholder="Nombre completo">
 
-<input id="edad"
+
+<input
+id="edad"
 type="number"
 placeholder="Edad">
 
+
 <select id="sexo">
-<option value="">Selecciona sexo</option>
-<option value="Femenino">Femenino</option>
-<option value="Masculino">Masculino</option>
+
+<option value="">
+Selecciona sexo
+</option>
+
+<option value="Femenino">
+Femenino
+</option>
+
+<option value="Masculino">
+Masculino
+</option>
+
 <option value="No especificado">
 No especificado
 </option>
+
 </select>
 
-<input id="fecha"
+
+<input
+id="fecha"
 type="date">
 
-<input id="lugar"
-type="text"
-placeholder="Lugar donde fue vista por última vez">
 
-<input id="ciudad"
+<input
+id="lugar"
+type="text"
+placeholder="Último lugar donde fue vista">
+
+
+<input
+id="coordenadas"
+type="text"
+placeholder="Coordenadas (opcional)">
+
+
+<input
+id="ciudad"
 type="text"
 placeholder="Ciudad / Estado">
 
-<input id="ropa"
+
+<input
+id="ropa"
 type="text"
 placeholder="Ropa que llevaba">
 
-<textarea id="descripcion"
-placeholder="Descripción física y señas particulares"></textarea>
 
-<input id="contacto"
+<textarea
+id="descripcion"
+placeholder="Descripción física y señas particulares">
+</textarea>
+
+
+<input
+id="contacto"
 type="text"
 placeholder="Teléfono de contacto">
 
-<button class="rojo" id="guardarCaso">
+
+<button
+class="rojo"
+id="guardarCaso">
 💾 Guardar caso
 </button>
 
-<button class="gris" id="cancelarCaso">
+
+<button
+class="gris"
+id="cancelarCaso">
 Cancelar
 </button>
 
-<p id="mensajeCaso" class="mensaje"></p>
+
+<p
+id="mensajeCaso"
+class="mensaje">
+</p>
 
 </section>
 
 
 <!-- ALERTAS -->
 
-<section class="card oculto" id="pantallaAlertas">
+<section
+class="card oculto"
+id="pantallaAlertas">
 
 <h2>🚨 Gestionar alertas</h2>
 
@@ -219,7 +291,9 @@ Cancelar
 Cargando...
 </div>
 
-<button class="gris" id="volverPanel">
+<button
+class="gris"
+id="volverPanel">
 ⬅️ Volver al panel
 </button>
 
@@ -227,15 +301,12 @@ Cargando...
 
 </div>
 
-<footer style="text-align:center;padding:25px;color:#777">
-ALERTA MX © 2026
-</footer>
-
 
 <script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 
 import {
 getAuth,
@@ -243,6 +314,7 @@ signInWithEmailAndPassword,
 signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
 import {
 getFirestore,
@@ -255,6 +327,8 @@ serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+
+/* FIREBASE */
 
 const firebaseConfig = {
 
@@ -279,47 +353,76 @@ appId:
 };
 
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app =
+initializeApp(firebaseConfig);
 
 
-const login=document.getElementById("login");
-const panelAdmin=document.getElementById("panelAdmin");
-const formulario=document.getElementById("formulario");
-const pantallaAlertas=document.getElementById("pantallaAlertas");
+const auth =
+getAuth(app);
+
+
+const db =
+getFirestore(app);
+
+
+/* ELEMENTOS */
+
+const login =
+document.getElementById("login");
+
+const panelAdmin =
+document.getElementById("panelAdmin");
+
+const formulario =
+document.getElementById("formulario");
+
+const pantallaAlertas =
+document.getElementById("pantallaAlertas");
 
 
 /* LOGIN */
 
-document.getElementById("botonLogin")
-.addEventListener("click",async()=>{
+document
+.getElementById("botonLogin")
+.addEventListener(
+"click",
+async()=>{
 
-const email=
-document.getElementById("email").value.trim();
-
-const password=
-document.getElementById("password").value;
-
-const resultado=
-document.getElementById("resultado");
+const email =
+document
+.getElementById("email")
+.value
+.trim();
 
 
-if(!email||!password){
+const password =
+document
+.getElementById("password")
+.value;
 
-resultado.textContent=
+
+const resultado =
+document
+.getElementById("resultado");
+
+
+if(!email || !password){
+
+resultado.textContent =
 "⚠️ Escribe correo y contraseña.";
 
 return;
+
 }
 
-resultado.textContent=
+
+resultado.textContent =
 "🔐 Iniciando sesión...";
 
 
 try{
 
-const credencial=
+const credencial =
 await signInWithEmailAndPassword(
 auth,
 email,
@@ -328,22 +431,29 @@ password
 
 
 if(
-credencial.user.email===
+credencial.user.email ===
 "admin@alertamx.app"
 ){
 
-login.classList.add("oculto");
-panelAdmin.classList.remove("oculto");
+login.classList.add(
+"oculto"
+);
 
-document.getElementById("adminCorreo")
-.textContent=
-"Administrador: "+
+panelAdmin.classList.remove(
+"oculto"
+);
+
+
+document
+.getElementById("adminCorreo")
+.textContent =
+"Administrador: " +
 credencial.user.email;
 
 }else{
 
-resultado.textContent=
-"✅ Sesión iniciada: "+
+resultado.textContent =
+"✅ Sesión iniciada: " +
 credencial.user.email;
 
 }
@@ -352,8 +462,8 @@ credencial.user.email;
 
 console.error(error);
 
-resultado.textContent=
-"❌ Error: "+
+resultado.textContent =
+"❌ Error: " +
 error.code;
 
 }
@@ -363,111 +473,287 @@ error.code;
 
 /* CREAR CASO */
 
-document.getElementById("crearCaso")
-.addEventListener("click",()=>{
+document
+.getElementById("crearCaso")
+.addEventListener(
+"click",
+()=>{
 
-panelAdmin.classList.add("oculto");
-formulario.classList.remove("oculto");
+panelAdmin.classList.add(
+"oculto"
+);
+
+formulario.classList.remove(
+"oculto"
+);
 
 });
 
 
 /* CANCELAR */
 
-document.getElementById("cancelarCaso")
-.addEventListener("click",()=>{
+document
+.getElementById("cancelarCaso")
+.addEventListener(
+"click",
+()=>{
 
-formulario.classList.add("oculto");
-panelAdmin.classList.remove("oculto");
+formulario.classList.add(
+"oculto"
+);
+
+panelAdmin.classList.remove(
+"oculto"
+);
 
 });
 
 
 /* GUARDAR CASO */
 
-document.getElementById("guardarCaso")
-.addEventListener("click",async()=>{
-
-const mensaje=
-document.getElementById("mensajeCaso");
-
-const nombre=
-document.getElementById("nombre").value.trim();
-
-const edad=
-document.getElementById("edad").value;
-
-const sexo=
-document.getElementById("sexo").value;
-
-const fecha=
-document.getElementById("fecha").value;
-
-const lugar=
-document.getElementById("lugar").value.trim();
-
-const ciudad=
-document.getElementById("ciudad").value.trim();
-
-const ropa=
-document.getElementById("ropa").value.trim();
-
-const descripcion=
-document.getElementById("descripcion").value.trim();
-
-const contacto=
-document.getElementById("contacto").value.trim();
+document
+.getElementById("guardarCaso")
+.addEventListener(
+"click",
+async()=>{
 
 
-if(!nombre||!fecha||!lugar){
+const mensaje =
+document
+.getElementById("mensajeCaso");
 
-mensaje.textContent=
+
+const nombre =
+document
+.getElementById("nombre")
+.value
+.trim();
+
+
+const edad =
+document
+.getElementById("edad")
+.value;
+
+
+const sexo =
+document
+.getElementById("sexo")
+.value;
+
+
+const fecha =
+document
+.getElementById("fecha")
+.value;
+
+
+const lugar =
+document
+.getElementById("lugar")
+.value
+.trim();
+
+
+const coordenadas =
+document
+.getElementById("coordenadas")
+.value
+.trim();
+
+
+const ciudad =
+document
+.getElementById("ciudad")
+.value
+.trim();
+
+
+const ropa =
+document
+.getElementById("ropa")
+.value
+.trim();
+
+
+const descripcion =
+document
+.getElementById("descripcion")
+.value
+.trim();
+
+
+const contacto =
+document
+.getElementById("contacto")
+.value
+.trim();
+
+
+if(
+!nombre ||
+!fecha ||
+!lugar
+){
+
+mensaje.textContent =
 "⚠️ Nombre, fecha y lugar son obligatorios.";
 
 return;
+
 }
 
-mensaje.textContent=
+
+mensaje.textContent =
 "💾 Guardando caso...";
 
 
 try{
 
-const usuario=auth.currentUser;
+
+const usuario =
+auth.currentUser;
+
 
 await addDoc(
 collection(db,"casos"),
 {
 
+nombre:
+
 nombre,
-edad:edad?Number(edad):null,
+
+
+edad:
+
+edad ?
+Number(edad) :
+null,
+
+
+sexo:
+
 sexo,
-fechaDesaparicion:fecha,
-lugarDesaparicion:lugar,
+
+
+fechaDesaparicion:
+
+fecha,
+
+
+lugarDesaparicion:
+
+lugar,
+
+
+coordenadas:
+
+coordenadas,
+
+
+ciudad:
+
 ciudad,
+
+
+ropa:
+
 ropa,
+
+
+descripcion:
+
 descripcion,
+
+
+contacto:
+
 contacto,
 
-estado:"pendiente",
+
+estado:
+
+"pendiente",
+
 
 creadoPor:
-usuario?usuario.email:"desconocido",
 
-creadoEn:serverTimestamp()
+usuario ?
+usuario.email :
+"desconocido",
+
+
+creadoEn:
+
+serverTimestamp()
 
 }
+
 );
 
-mensaje.textContent=
+
+mensaje.textContent =
 "✅ Caso guardado correctamente.";
+
+
+/* LIMPIAR */
+
+document
+.getElementById("nombre")
+.value="";
+
+
+document
+.getElementById("edad")
+.value="";
+
+
+document
+.getElementById("sexo")
+.value="";
+
+
+document
+.getElementById("fecha")
+.value="";
+
+
+document
+.getElementById("lugar")
+.value="";
+
+
+document
+.getElementById("coordenadas")
+.value="";
+
+
+document
+.getElementById("ciudad")
+.value="";
+
+
+document
+.getElementById("ropa")
+.value="";
+
+
+document
+.getElementById("descripcion")
+.value="";
+
+
+document
+.getElementById("contacto")
+.value="";
+
 
 }catch(error){
 
 console.error(error);
 
-mensaje.textContent=
-"❌ No se pudo guardar: "+
+mensaje.textContent =
+"❌ No se pudo guardar: " +
 error.code;
 
 }
@@ -477,137 +763,203 @@ error.code;
 
 /* GESTIONAR ALERTAS */
 
-document.getElementById("gestionarAlertas")
-.addEventListener("click",cargarCasos);
+document
+.getElementById("gestionarAlertas")
+.addEventListener(
+"click",
+cargarCasos
+);
 
 
 async function cargarCasos(){
 
-panelAdmin.classList.add("oculto");
-pantallaAlertas.classList.remove("oculto");
+panelAdmin.classList.add(
+"oculto"
+);
 
-const lista=
-document.getElementById("listaCasos");
+pantallaAlertas.classList.remove(
+"oculto"
+);
 
-lista.innerHTML=
+
+const lista =
+document
+.getElementById("listaCasos");
+
+
+lista.innerHTML =
 "🔄 Cargando casos...";
 
 
 try{
 
-const resultados=
-await getDocs(collection(db,"casos"));
+
+const resultados =
+await getDocs(
+collection(db,"casos")
+);
 
 
-if(resultados.empty){
+if(
+resultados.empty
+){
 
-lista.innerHTML=
+lista.innerHTML =
 "📭 No hay casos registrados.";
 
 return;
+
 }
 
 
 lista.innerHTML="";
 
 
-resultados.forEach((documento)=>{
-
-const caso=documento.data();
-
-const tarjeta=
-document.createElement("div");
-
-tarjeta.className="caso";
+resultados.forEach(
+(documento)=>{
 
 
-const titulo=
-document.createElement("h3");
-
-titulo.textContent=
-"🚨 "+(caso.nombre||"Sin nombre");
-
-tarjeta.appendChild(titulo);
+const caso =
+documento.data();
 
 
-const datos=document.createElement("div");
+const tarjeta =
+document.createElement(
+"div"
+);
 
-datos.innerHTML=`
 
-<p><b>Edad:</b>
-${caso.edad??"No indicada"}</p>
+tarjeta.className =
+"caso";
 
-<p><b>Sexo:</b>
-${caso.sexo||"No indicado"}</p>
 
-<p><b>Fecha:</b>
-${caso.fechaDesaparicion||"No indicada"}</p>
+tarjeta.innerHTML = `
 
-<p><b>Lugar:</b>
-${caso.lugarDesaparicion||"No indicado"}</p>
+<h3>
+🚨 ${caso.nombre || "Sin nombre"}
+</h3>
 
-<p><b>Ciudad:</b>
-${caso.ciudad||"No indicada"}</p>
+<p>
+<b>Edad:</b>
+${caso.edad ?? "No indicada"}
+</p>
 
-<p><b>Estado:</b>
-<span id="estado-${documento.id}">
-${caso.estado||"pendiente"}
+<p>
+<b>Sexo:</b>
+${caso.sexo || "No indicado"}
+</p>
+
+<p>
+<b>Fecha:</b>
+${caso.fechaDesaparicion || "No indicada"}
+</p>
+
+<p>
+<b>Último lugar:</b>
+${caso.lugarDesaparicion || "No indicado"}
+</p>
+
+<p>
+<b>Coordenadas:</b>
+${caso.coordenadas || "No indicadas"}
+</p>
+
+<p>
+<b>Ciudad / Estado:</b>
+${caso.ciudad || "No indicado"}
+</p>
+
+<p>
+<b>Estado:</b>
+<span>
+${caso.estado || "pendiente"}
 </span>
 </p>
 
 `;
 
-tarjeta.appendChild(datos);
+
+if(
+caso.estado === "pendiente" ||
+!caso.estado
+){
 
 
-/* BOTONES */
+const aprobar =
+document.createElement(
+"button"
+);
 
-if(caso.estado==="pendiente"||!caso.estado){
 
-const aprobar=
-document.createElement("button");
+aprobar.className =
+"verde";
 
-aprobar.className="verde";
-aprobar.textContent="✅ Aprobar";
 
-aprobar.onclick=()=>{
+aprobar.textContent =
+"✅ Aprobar";
+
+
+aprobar.onclick =
+()=>{
+
 cambiarEstado(
 documento.id,
 "aprobado"
 );
+
 };
 
-tarjeta.appendChild(aprobar);
+
+tarjeta.appendChild(
+aprobar
+);
 
 
-const rechazar=
-document.createElement("button");
+const rechazar =
+document.createElement(
+"button"
+);
 
-rechazar.className="rojo";
-rechazar.textContent="❌ Rechazar";
 
-rechazar.onclick=()=>{
+rechazar.className =
+"rojo";
+
+
+rechazar.textContent =
+"❌ Rechazar";
+
+
+rechazar.onclick =
+()=>{
+
 cambiarEstado(
 documento.id,
 "rechazado"
 );
+
 };
 
-tarjeta.appendChild(rechazar);
+
+tarjeta.appendChild(
+rechazar
+);
 
 }
 
 
-lista.appendChild(tarjeta);
+lista.appendChild(
+tarjeta
+);
 
 });
+
 
 }catch(error){
 
 console.error(error);
 
-lista.innerHTML=
-"❌ Error al cargar casos: "+
+lista.innerHTML =
+"❌ Error al cargar casos: " +
 error.code;
 
 }
@@ -617,15 +969,27 @@ error.code;
 
 /* CAMBIAR ESTADO */
 
-async function cambiarEstado(id,nuevoEstado){
+async function cambiarEstado(
+id,
+nuevoEstado
+){
 
 try{
 
+
 await updateDoc(
-doc(db,"casos",id),
+
+doc(
+db,
+"casos",
+id
+),
+
 {
-estado:nuevoEstado
+estado:
+nuevoEstado
 }
+
 );
 
 
@@ -637,7 +1001,7 @@ await cargarCasos();
 console.error(error);
 
 alert(
-"No se pudo actualizar el caso: "+
+"No se pudo actualizar el caso: " +
 error.code
 );
 
@@ -648,31 +1012,46 @@ error.code
 
 /* VOLVER */
 
-document.getElementById("volverPanel")
-.addEventListener("click",()=>{
+document
+.getElementById("volverPanel")
+.addEventListener(
+"click",
+()=>{
 
-pantallaAlertas.classList.add("oculto");
-panelAdmin.classList.remove("oculto");
+pantallaAlertas.classList.add(
+"oculto"
+);
+
+panelAdmin.classList.remove(
+"oculto"
+);
 
 });
 
 
 /* BUSCAR */
 
-document.getElementById("buscar")
-.addEventListener("click",()=>{
+document
+.getElementById("buscar")
+.addEventListener(
+"click",
+()=>{
 
-document.getElementById("panelMensaje")
-.textContent=
-"🔎 El buscador se construirá después.";
+document
+.getElementById("panelMensaje")
+.textContent =
+"🔎 El buscador público está disponible en alertas.html.";
 
 });
 
 
 /* CERRAR SESIÓN */
 
-document.getElementById("cerrarSesion")
-.addEventListener("click",async()=>{
+document
+.getElementById("cerrarSesion")
+.addEventListener(
+"click",
+async()=>{
 
 await signOut(auth);
 
