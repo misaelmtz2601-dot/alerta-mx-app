@@ -1,1 +1,11 @@
 
+{
+  "name": "ALERTA MX",
+  "short_name": "ALERTA MX",
+  "description": "Aplicación de ALERTA MX para reportar, consultar y gestionar alertas.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "orientation": "portrait"
+}
