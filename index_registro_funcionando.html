@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALERTA MX</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f3f3;
+  color:#222;
+}
+
+header{
+  background:#b00020;
+  color:white;
+  text-align:center;
+  padding:22px;
+  font-size:28px;
+  font-weight:bold;
+}
+
+.contenedor{
+  max-width:550px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  margin-bottom:18px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
+
+input,textarea,select{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:1px solid #bbb;
+  border-radius:8px;
+  font-size:16px;
+}
+
+textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:0;
+  border-radius:9px;
+  font-size:16px;
+  font-weight:bold;
+  color:white;
+  cursor:pointer;
+}
+
+.azul{background:#1769e0}
+.rojo{background:#b00020}
+.verde{background:#16803c}
+.negro{background:#222}
+.gris{background:#666}
+
+.oculto{
+  display:none;
+}
+
+.mensaje{
+  margin-top:15px;
+  font-weight:bold;
+}
+
+.caso{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:16px;
+  margin-top:15px;
+  background:#fafafa;
+}
+
+.estado{
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🚨 ALERTA MX
+</header>
+
+<div class="contenedor">
+
+
+<!-- LOGIN -->
+
+<section class="card" id="login">
+
+<h2>Iniciar sesión</h2>
+
+<input
+id="email"
+type="email"
+placeholder="Correo electrónico">
+
+<input
+id="password"
+type="password"
+placeholder="Contraseña">
+
+<button
+class="azul"
+id="botonLogin">
+Entrar
+</button>
+<button
+class="azul"
+id="botonRegistro">
+Crear cuenta
+</button>  
+
+<p
+id="resultado"
+class="mensaje">
+</p>
+
+</section>
+
+
+<!-- PANEL ADMIN -->
+
+<section
+class="card oculto"
+id="panelAdmin">
+
+<h2>🛡️ Panel de administrador</h2>
+
+<p id="adminCorreo"></p>
+
+<button
+class="rojo"
+id="gestionarAlertas">
+🚨 Gestionar alertas
+</button>
+
+<button
+class="azul"
+id="crearCaso">
+📝 Crear caso
+</button>
+
+<button
+class="negro"
+id="buscar">
+🔎 Buscar persona
+</button>
+
+<button
+class="verde"
+id="cerrarSesion">
+🚪 Cerrar sesión
+</button>
+
+<p
+id="panelMensaje"
+class="mensaje">
+</p>
+
+</section>
+
+
+<!-- FORMULARIO -->
+
+<section
+class="card oculto"
+id="formulario">
+
+<h2>📝 Crear caso</h2>
+
+
+<input
+id="nombre"
+type="text"
+placeholder="Nombre completo">
+
+
+<input
+id="edad"
+type="number"
+placeholder="Edad">
+
+
+<select id="sexo">
+
+<option value="">
+Selecciona sexo
+</option>
+
+<option value="Femenino">
+Femenino
+</option>
+
+<option value="Masculino">
+Masculino
+</option>
+
+<option value="No especificado">
+No especificado
+</option>
+
+</select>
+
+
+<input
+id="fecha"
+type="date">
+
+
+<input
+id="lugar"
+type="text"
+placeholder="Último lugar donde fue vista">
+
+
+<input
+id="coordenadas"
+type="text"
+placeholder="Coordenadas (opcional)">
+
+
+<input
+id="ciudad"
+type="text"
+placeholder="Ciudad / Estado">
+
+
+<input
+id="ropa"
+type="text"
+placeholder="Ropa que llevaba">
+
+
+<textarea
+id="descripcion"
+placeholder="Descripción física y señas particulares">
+</textarea>
+
+
+<input
+id="contacto"
+type="text"
+placeholder="Teléfono de contacto">
+
+
+<button
+class="rojo"
+id="guardarCaso">
+💾 Guardar caso
+</button>
+
+
+<button
+class="gris"
+id="cancelarCaso">
+Cancelar
+</button>
+
+
+<p
+id="mensajeCaso"
+class="mensaje">
+</p>
+
+</section>
+
+
+<!-- ALERTAS -->
+
+<section
+class="card oculto"
+id="pantallaAlertas">
+
+<h2>🚨 Gestionar alertas</h2>
+
+<div id="listaCasos">
+Cargando...
+</div>
+
+<button
+class="gris"
+id="volverPanel">
+⬅️ Volver al panel
+</button>
+
+</section>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+updateDoc,
+doc,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* FIREBASE */
+
+const firebaseConfig = {
+
+apiKey:
+"AIzaSyATc2OT-2u-UcBerDy7wVYu4DGat3MyB0E",
+
+authDomain:
+"alerta-mx-42492.firebaseapp.com",
+
+projectId:
+"alerta-mx-42492",
+
+storageBucket:
+"alerta-mx-42492.firebasestorage.app",
+
+messagingSenderId:
+"17765892560",
+
+appId:
+"1:17765892560:web:29a16191b3155eae2c39d5"
+
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+
+const auth =
+getAuth(app);
+
+
+const db =
+getFirestore(app);
+
+
+/* ELEMENTOS */
+
+const login =
+document.getElementById("login");
+
+const panelAdmin =
+document.getElementById("panelAdmin");
+
+const formulario =
+document.getElementById("formulario");
+
+const pantallaAlertas =
+document.getElementById("pantallaAlertas");
+
+
+/* LOGIN */
+
+document
+.getElementById("botonLogin")
+.addEventListener(
+"click",
+async()=>{
+
+const email =
+document
+.getElementById("email")
+.value
+.trim();
+
+
+const password =
+document
+.getElementById("password")
+.value;
+
+
+const resultado =
+document
+.getElementById("resultado");
+
+
+if(!email || !password){
+
+resultado.textContent =
+"⚠️ Escribe correo y contraseña.";
+
+return;
+
+}
+
+
+resultado.textContent =
+"🔐 Iniciando sesión...";
+
+
+try{
+
+const credencial =
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+
+if(
+credencial.user.email ===
+"admin@alertamx.app"
+){
+
+login.classList.add(
+"oculto"
+);
+
+panelAdmin.classList.remove(
+"oculto"
+);
+
+
+document
+.getElementById("adminCorreo")
+.textContent =
+"Administrador: " +
+credencial.user.email;
+
+}else{
+
+resultado.textContent =
+"✅ Sesión iniciada: " +
+credencial.user.email;
+
+}
+
+}catch(error){
+
+console.error(error);
+
+resultado.textContent =
+"❌ Error: " +
+error.code;
+
+}
+
+});
+
+
+
+/* REGISTRO */
+
+document
+.getElementById("botonRegistro")
+.addEventListener(
+"click",
+async()=>{
+
+const email =
+document
+.getElementById("email")
+.value
+.trim();
+
+const password =
+document
+.getElementById("password")
+.value;
+
+const resultado =
+document
+.getElementById("resultado");
+
+if(!email || !password){
+
+resultado.textContent =
+"⚠️ Escribe correo y contraseña.";
+
+return;
+
+}
+
+if(password.length < 6){
+
+resultado.textContent =
+"⚠️ La contraseña debe tener mínimo 6 caracteres.";
+
+return;
+
+}
+
+resultado.textContent =
+"⏳ Creando cuenta...";
+
+try{
+
+const credencial =
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+resultado.textContent =
+"✅ Cuenta creada correctamente. Ya puedes iniciar sesión.";
+
+console.log(
+"Usuario registrado:",
+credencial.user.email
+);
+
+}catch(error){
+
+console.error(error);
+
+if(
+error.code ===
+"auth/email-already-in-use"
+){
+
+resultado.textContent =
+"⚠️ Este correo ya está registrado.";
+
+}else if(
+error.code ===
+"auth/invalid-email"
+){
+
+resultado.textContent =
+"⚠️ El correo no es válido.";
+
+}else if(
+error.code ===
+"auth/weak-password"
+){
+
+resultado.textContent =
+"⚠️ La contraseña debe tener mínimo 6 caracteres.";
+
+}else{
+
+resultado.textContent =
+"❌ Error al crear la cuenta: " +
+error.code;
+
+}
+
+}
+
+}
+);
+
+/* CREAR CASO */
+
+document
+.getElementById("crearCaso")
+.addEventListener(
+"click",
+()=>{
+
+panelAdmin.classList.add(
+"oculto"
+);
+
+formulario.classList.remove(
+"oculto"
+);
+
+});
+
+
+/* CANCELAR */
+
+document
+.getElementById("cancelarCaso")
+.addEventListener(
+"click",
+()=>{
+
+formulario.classList.add(
+"oculto"
+);
+
+panelAdmin.classList.remove(
+"oculto"
+);
+
+});
+
+
+/* GUARDAR CASO */
+
+document
+.getElementById("guardarCaso")
+.addEventListener(
+"click",
+async()=>{
+
+
+const mensaje =
+document
+.getElementById("mensajeCaso");
+
+
+const nombre =
+document
+.getElementById("nombre")
+.value
+.trim();
+
+
+const edad =
+document
+.getElementById("edad")
+.value;
+
+
+const sexo =
+document
+.getElementById("sexo")
+.value;
+
+
+const fecha =
+document
+.getElementById("fecha")
+.value;
+
+
+const lugar =
+document
+.getElementById("lugar")
+.value
+.trim();
+
+
+const coordenadas =
+document
+.getElementById("coordenadas")
+.value
+.trim();
+
+
+const ciudad =
+document
+.getElementById("ciudad")
+.value
+.trim();
+
+
+const ropa =
+document
+.getElementById("ropa")
+.value
+.trim();
+
+
+const descripcion =
+document
+.getElementById("descripcion")
+.value
+.trim();
+
+
+const contacto =
+document
+.getElementById("contacto")
+.value
+.trim();
+
+
+if(
+!nombre ||
+!fecha ||
+!lugar
+){
+
+mensaje.textContent =
+"⚠️ Nombre, fecha y lugar son obligatorios.";
+
+return;
+
+}
+
+
+mensaje.textContent =
+"💾 Guardando caso...";
+
+
+try{
+
+
+const usuario =
+auth.currentUser;
+
+
+await addDoc(
+collection(db,"casos"),
+{
+
+nombre:
+
+nombre,
+
+
+edad:
+
+edad ?
+Number(edad) :
+null,
+
+
+sexo:
+
+sexo,
+
+
+fechaDesaparicion:
+
+fecha,
+
+
+lugarDesaparicion:
+
+lugar,
+
+
+coordenadas:
+
+coordenadas,
+
+
+ciudad:
+
+ciudad,
+
+
+ropa:
+
+ropa,
+
+
+descripcion:
+
+descripcion,
+
+
+contacto:
+
+contacto,
+
+
+estado:
+
+"pendiente",
+
+
+creadoPor:
+
+usuario ?
+usuario.email :
+"desconocido",
+
+
+creadoEn:
+
+serverTimestamp()
+
+}
+
+);
+
+
+mensaje.textContent =
+"✅ Caso guardado correctamente.";
+
+
+/* LIMPIAR */
+
+document
+.getElementById("nombre")
+.value="";
+
+
+document
+.getElementById("edad")
+.value="";
+
+
+document
+.getElementById("sexo")
+.value="";
+
+
+document
+.getElementById("fecha")
+.value="";
+
+
+document
+.getElementById("lugar")
+.value="";
+
+
+document
+.getElementById("coordenadas")
+.value="";
+
+
+document
+.getElementById("ciudad")
+.value="";
+
+
+document
+.getElementById("ropa")
+.value="";
+
+
+document
+.getElementById("descripcion")
+.value="";
+
+
+document
+.getElementById("contacto")
+.value="";
+
+
+}catch(error){
+
+console.error(error);
+
+mensaje.textContent =
+"❌ No se pudo guardar: " +
+error.code;
+
+}
+
+});
+
+
+/* GESTIONAR ALERTAS */
+
+document
+.getElementById("gestionarAlertas")
+.addEventListener(
+"click",
+cargarCasos
+);
+
+
+async function cargarCasos(){
+
+panelAdmin.classList.add(
+"oculto"
+);
+
+pantallaAlertas.classList.remove(
+"oculto"
+);
+
+
+const lista =
+document
+.getElementById("listaCasos");
+
+
+lista.innerHTML =
+"🔄 Cargando casos...";
+
+
+try{
+
+
+const resultados =
+await getDocs(
+collection(db,"casos")
+);
+
+
+if(
+resultados.empty
+){
+
+lista.innerHTML =
+"📭 No hay casos registrados.";
+
+return;
+
+}
+
+
+lista.innerHTML="";
+
+
+resultados.forEach(
+(documento)=>{
+
+
+const caso =
+documento.data();
+
+
+const tarjeta =
+document.createElement(
+"div"
+);
+
+
+tarjeta.className =
+"caso";
+
+
+tarjeta.innerHTML = `
+
+<h3>
+🚨 ${caso.nombre || "Sin nombre"}
+</h3>
+
+<p>
+<b>Edad:</b>
+${caso.edad ?? "No indicada"}
+</p>
+
+<p>
+<b>Sexo:</b>
+${caso.sexo || "No indicado"}
+</p>
+
+<p>
+<b>Fecha:</b>
+${caso.fechaDesaparicion || "No indicada"}
+</p>
+
+<p>
+<b>Último lugar:</b>
+${caso.lugarDesaparicion || "No indicado"}
+</p>
+
+<p>
+<b>Coordenadas:</b>
+${caso.coordenadas || "No indicadas"}
+</p>
+
+<p>
+<b>Ciudad / Estado:</b>
+${caso.ciudad || "No indicado"}
+</p>
+
+<p>
+<b>Estado:</b>
+<span>
+${caso.estado || "pendiente"}
+</span>
+</p>
+
+`;
+
+
+if(
+caso.estado === "pendiente" ||
+!caso.estado
+){
+
+
+const aprobar =
+document.createElement(
+"button"
+);
+
+
+aprobar.className =
+"verde";
+
+
+aprobar.textContent =
+"✅ Aprobar";
+
+
+aprobar.onclick =
+()=>{
+
+cambiarEstado(
+documento.id,
+"aprobado"
+);
+
+};
+
+
+tarjeta.appendChild(
+aprobar
+);
+
+
+const rechazar =
+document.createElement(
+"button"
+);
+
+
+rechazar.className =
+"rojo";
+
+
+rechazar.textContent =
+"❌ Rechazar";
+
+
+rechazar.onclick =
+()=>{
+
+cambiarEstado(
+documento.id,
+"rechazado"
+);
+
+};
+
+
+tarjeta.appendChild(
+rechazar
+);
+
+}
+
+
+lista.appendChild(
+tarjeta
+);
+
+});
+
+
+}catch(error){
+
+console.error(error);
+
+lista.innerHTML =
+"❌ Error al cargar casos: " +
+error.code;
+
+}
+
+}
+
+
+/* CAMBIAR ESTADO */
+
+async function cambiarEstado(
+id,
+nuevoEstado
+){
+
+try{
+
+
+await updateDoc(
+
+doc(
+db,
+"casos",
+id
+),
+
+{
+estado:
+nuevoEstado
+}
+
+);
+
+
+await cargarCasos();
+
+
+}catch(error){
+
+console.error(error);
+
+alert(
+"No se pudo actualizar el caso: " +
+error.code
+);
+
+}
+
+}
+
+
+/* VOLVER */
+
+document
+.getElementById("volverPanel")
+.addEventListener(
+"click",
+()=>{
+
+pantallaAlertas.classList.add(
+"oculto"
+);
+
+panelAdmin.classList.remove(
+"oculto"
+);
+
+});
+
+
+/* BUSCAR */
+
+document
+.getElementById("buscar")
+.addEventListener(
+"click",
+()=>{
+
+document
+.getElementById("panelMensaje")
+.textContent =
+"🔎 El buscador público está disponible en alertas.html.";
+
+});
+
+
+/* CERRAR SESIÓN */
+
+document
+.getElementById("cerrarSesion")
+.addEventListener(
+"click",
+async()=>{
+
+await signOut(auth);
+
+location.reload();
+
+});
+
+</script>
+
+</body>
+</html>
